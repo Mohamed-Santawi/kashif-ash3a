@@ -22,6 +22,8 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminSetup from "./pages/AdminSetup";
 import AdminManagement from "./pages/AdminManagement";
+import AdminUsers from "./pages/AdminUsers";
+import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminDebug from "./pages/AdminDebug";
 import NavigationTest from "./pages/NavigationTest";
 
@@ -84,6 +86,8 @@ function App() {
               }
             />
             <Route path="/admin/management" element={<AdminManagement />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
             <Route
               path="/admin/debug"
               element={

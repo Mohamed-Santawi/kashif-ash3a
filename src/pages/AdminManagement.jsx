@@ -8,11 +8,17 @@ import {
   onSnapshot,
   doc,
   addDoc,
+  setDoc,
+  getDoc,
   updateDoc,
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import { auth, db } from "../utils/firebase";
 import {
   ADMIN_ROLES,
@@ -38,6 +44,7 @@ import {
   GradientBackground,
   GlassCard,
 } from "../components/Animations";
+import AdminLayout from "../components/AdminLayout";
 
 const AdminManagement = () => {
   const navigate = useNavigate();
@@ -45,6 +52,7 @@ const AdminManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -54,13 +62,17 @@ const AdminManagement = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    // Check if current user is super admin
-    if (!auth.currentUser || auth.currentUser.email !== "admin@mansa.com") {
+    // Check if current user is authenticated
+    if (!auth.currentUser) {
       navigate("/admin/login", { replace: true });
       return;
     }
+
+    // Set current user
+    setCurrentUser(auth.currentUser);
 
     // Listen to admins collection
     const q = query(collection(db, "admins"), orderBy("createdAt", "desc"));
@@ -102,6 +114,10 @@ const AdminManagement = () => {
     }));
   };
 
+  const canCreateAdmins = () => {
+    return currentUser && currentUser.email === "admin@mansa.com";
+  };
+
   const handleCreateAdmin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -109,14 +125,33 @@ const AdminManagement = () => {
     setSuccess("");
 
     try {
-      // Create Firebase Auth user
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        formData.email,
-        formData.password
-      );
+      let userCredential;
 
-      // Create admin document in Firestore
+      // First, try to create the user
+      try {
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
+        console.log("✅ New user created successfully");
+      } catch (createError) {
+        console.log("❌ User creation failed:", createError.code);
+
+        if (createError.code === "auth/email-already-in-use") {
+          // User exists, don't sign in to avoid logging out current admin
+          setError(
+            "البريد الإلكتروني مستخدم بالفعل. يرجى استخدام بريد إلكتروني آخر."
+          );
+          setLoading(false);
+          return;
+        } else {
+          // Other creation errors
+          throw createError;
+        }
+      }
+
+      // Create admin document in Firestore using the user's UID as document ID
       const adminData = {
         uid: userCredential.user.uid,
         email: formData.email,
@@ -129,47 +164,57 @@ const AdminManagement = () => {
         lastLogin: null,
       };
 
-      await addDoc(collection(db, "admins"), adminData);
+      console.log("📝 Creating admin document for:", userCredential.user.uid);
+      await setDoc(doc(db, "admins", userCredential.user.uid), adminData);
+      console.log("✅ Admin document created successfully");
 
-      setSuccess("تم إنشاء المدير بنجاح!");
+      setSuccess(`تم إنشاء ${getRoleDisplayName(formData.role)} بنجاح!`);
+
+      // Reset form
       setFormData({
         email: "",
         password: "",
         role: ADMIN_ROLES.MODERATOR,
         name: "",
-        permissions: [],
+        permissions: ROLE_PERMISSIONS[ADMIN_ROLES.MODERATOR] || [],
       });
       setShowCreateForm(false);
 
-      // Sign out the created user
-      await auth.signOut();
-      // Sign back in as super admin
-      await auth.signInWithEmailAndPassword("admin@mansa.com", "Admin123");
+      // The admin list will automatically refresh via the onSnapshot listener
     } catch (error) {
-      console.error("Error creating admin:", error);
-      if (error.code === "auth/email-already-in-use") {
-        setError("البريد الإلكتروني مستخدم بالفعل");
-      } else {
-        setError("حدث خطأ أثناء إنشاء المدير");
-      }
+      console.error("❌ Error creating admin:", error);
+      setError("حدث خطأ أثناء إنشاء المدير: " + error.message);
     }
 
     setLoading(false);
   };
 
-  const handleUpdateAdmin = async (adminId, updates) => {
+  const handleUpdateAdmin = async (e) => {
+    e.preventDefault();
+    if (!editingAdmin) return;
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      const adminRef = doc(db, "admins", adminId);
+      const adminRef = doc(db, "admins", editingAdmin.id);
       await updateDoc(adminRef, {
-        ...updates,
+        name: editingAdmin.name,
+        role: editingAdmin.role,
+        permissions: editingAdmin.permissions,
         updatedAt: serverTimestamp(),
         updatedBy: auth.currentUser.email,
       });
+
       setSuccess("تم تحديث المدير بنجاح!");
+      setEditingAdmin(null);
     } catch (error) {
       console.error("Error updating admin:", error);
       setError("حدث خطأ أثناء تحديث المدير");
     }
+
+    setLoading(false);
   };
 
   const handleDeleteAdmin = async (adminId) => {
@@ -185,40 +230,48 @@ const AdminManagement = () => {
   };
 
   const toggleAdminStatus = (admin) => {
-    handleUpdateAdmin(admin.id, { isActive: !admin.isActive });
+    const adminRef = doc(db, "admins", admin.id);
+    updateDoc(adminRef, {
+      isActive: !admin.isActive,
+      updatedAt: serverTimestamp(),
+      updatedBy: auth.currentUser.email,
+    })
+      .then(() => {
+        setSuccess("تم تحديث حالة المدير بنجاح!");
+      })
+      .catch((error) => {
+        console.error("Error updating admin status:", error);
+        setError("حدث خطأ أثناء تحديث حالة المدير");
+      });
   };
 
   if (loading) {
     return (
-      <GradientBackground
-        className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
-        dir="rtl"
-      >
-        <AnimatedCard>
-          <GlassCard className="p-10 text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <h2 className="text-xl font-semibold text-gray-700">
-              جاري التحميل...
-            </h2>
-          </GlassCard>
-        </AnimatedCard>
-      </GradientBackground>
+      <AdminLayout>
+        <div className="flex items-center justify-center py-12">
+          <AnimatedCard>
+            <GlassCard className="p-10 text-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"
+              />
+              <h2 className="text-xl font-semibold text-gray-700">
+                جاري التحميل...
+              </h2>
+            </GlassCard>
+          </AnimatedCard>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <GradientBackground
-      className="min-h-screen py-12 px-4 sm:px-6 lg:px-8"
-      dir="rtl"
-    >
+    <AdminLayout>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -234,6 +287,12 @@ const AdminManagement = () => {
             <p className="text-xl text-gray-600">
               إدارة صلاحيات المديرين والأدوار
             </p>
+            {currentUser && (
+              <p className="text-sm text-blue-600 mt-2">
+                مسجل الدخول كـ:{" "}
+                {currentUser.email === "admin@mansa.com" ? "مدير عام" : "مشرف"}
+              </p>
+            )}
           </div>
           <div className="flex gap-4">
             <motion.button
@@ -245,15 +304,27 @@ const AdminManagement = () => {
               <FaCog className="w-5 h-5" />
               لوحة التحكم
             </motion.button>
-            <motion.button
-              onClick={() => setShowCreateForm(true)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
-            >
-              <FaUserPlus className="w-5 h-5" />
-              إضافة مدير
-            </motion.button>
+            {canCreateAdmins() && (
+              <motion.button
+                onClick={() => {
+                  // Initialize form data with default role permissions
+                  setFormData({
+                    email: "",
+                    password: "",
+                    role: ADMIN_ROLES.MODERATOR,
+                    name: "",
+                    permissions: ROLE_PERMISSIONS[ADMIN_ROLES.MODERATOR] || [],
+                  });
+                  setShowCreateForm(true);
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
+              >
+                <FaUserPlus className="w-5 h-5" />
+                إضافة مدير جديد
+              </motion.button>
+            )}
           </div>
         </motion.div>
 
@@ -415,7 +486,7 @@ const AdminManagement = () => {
             >
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  إضافة مدير جديد
+                  إضافة {getRoleDisplayName(formData.role)} جديد
                 </h2>
                 <button
                   onClick={() => setShowCreateForm(false)}
@@ -460,16 +531,29 @@ const AdminManagement = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     كلمة المرور
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    required
-                    minLength={6}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="كلمة المرور (6 أحرف على الأقل)"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      required
+                      minLength={6}
+                      className="w-full p-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="كلمة المرور (6 أحرف على الأقل)"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <FaEyeSlash className="w-5 h-5" />
+                      ) : (
+                        <FaEye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div>
@@ -528,7 +612,153 @@ const AdminManagement = () => {
                     whileTap={{ scale: 0.95 }}
                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors duration-300 disabled:opacity-50"
                   >
-                    {loading ? "جاري الإنشاء..." : "إنشاء مدير"}
+                    {loading
+                      ? "جاري الإنشاء..."
+                      : `إنشاء ${getRoleDisplayName(formData.role)}`}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Edit Admin Modal */}
+        {editingAdmin && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  تعديل {getRoleDisplayName(editingAdmin.role)}
+                </h2>
+                <button
+                  onClick={() => setEditingAdmin(null)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateAdmin} className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    الاسم
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={editingAdmin.name || ""}
+                    onChange={(e) =>
+                      setEditingAdmin({ ...editingAdmin, name: e.target.value })
+                    }
+                    required
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="اسم المدير"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    البريد الإلكتروني
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={editingAdmin.email || ""}
+                    disabled
+                    className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                    placeholder="admin@example.com"
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    لا يمكن تغيير البريد الإلكتروني
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    الدور
+                  </label>
+                  <select
+                    name="role"
+                    value={editingAdmin.role || ADMIN_ROLES.MODERATOR}
+                    onChange={(e) => {
+                      const newRole = e.target.value;
+                      setEditingAdmin({
+                        ...editingAdmin,
+                        role: newRole,
+                        permissions: ROLE_PERMISSIONS[newRole] || [],
+                      });
+                    }}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value={ADMIN_ROLES.VIEWER}>مراقب</option>
+                    <option value={ADMIN_ROLES.MODERATOR}>مشرف</option>
+                    <option value={ADMIN_ROLES.ADMIN}>مدير</option>
+                    <option value={ADMIN_ROLES.SUPER_ADMIN}>مدير عام</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    الصلاحيات المخصصة (اختياري)
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                    {Object.values(PERMISSIONS).map((permission) => (
+                      <label key={permission} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          value={permission}
+                          checked={
+                            editingAdmin.permissions?.includes(permission) ||
+                            false
+                          }
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            const currentPermissions =
+                              editingAdmin.permissions || [];
+                            const newPermissions = checked
+                              ? [...currentPermissions, permission]
+                              : currentPermissions.filter(
+                                  (p) => p !== permission
+                                );
+                            setEditingAdmin({
+                              ...editingAdmin,
+                              permissions: newPermissions,
+                            });
+                          }}
+                          className="ml-2"
+                        />
+                        <span className="text-sm">
+                          {getPermissionDisplayName(permission)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <motion.button
+                    type="button"
+                    onClick={() => setEditingAdmin(null)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-lg font-semibold transition-colors duration-300"
+                  >
+                    إلغاء
+                  </motion.button>
+                  <motion.button
+                    type="submit"
+                    disabled={loading}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors duration-300 disabled:opacity-50"
+                  >
+                    {loading
+                      ? "جاري التحديث..."
+                      : `تحديث ${getRoleDisplayName(editingAdmin.role)}`}
                   </motion.button>
                 </div>
               </form>
@@ -536,7 +766,7 @@ const AdminManagement = () => {
           </div>
         )}
       </div>
-    </GradientBackground>
+    </AdminLayout>
   );
 };
 

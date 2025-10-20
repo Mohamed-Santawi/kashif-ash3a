@@ -16,6 +16,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { auth, db } from "../utils/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
   ADMIN_ROLES,
   PERMISSIONS,
@@ -41,11 +42,13 @@ import {
   GradientBackground,
   GlassCard,
 } from "../components/Animations";
+import AdminLayout from "../components/AdminLayout";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [currentAdmin, setCurrentAdmin] = useState(null);
@@ -64,28 +67,31 @@ const AdminDashboard = () => {
   const [expectedPoints, setExpectedPoints] = useState(null);
 
   useEffect(() => {
-    // Check if user is admin and get admin data
-    const checkAdminAccess = async () => {
-      if (!auth.currentUser) {
+    // Wait for auth state to be ready, then check
+    const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setAuthLoading(false);
         navigate("/admin/login", { replace: true });
         return;
       }
 
       try {
-        const adminDoc = await getDoc(doc(db, "admins", auth.currentUser.uid));
+        // Check if user is admin and get admin data
+        const adminDoc = await getDoc(doc(db, "admins", user.uid));
 
         if (!adminDoc.exists()) {
           // Check if it's the super admin
-          if (auth.currentUser.email === "admin@mansa.com") {
+          if (user.email === "admin@mansa.com") {
             setCurrentAdmin({
-              uid: auth.currentUser.uid,
-              email: auth.currentUser.email,
+              uid: user.uid,
+              email: user.email,
               name: "مدير عام",
               role: ADMIN_ROLES.SUPER_ADMIN,
               permissions: Object.values(PERMISSIONS),
               isActive: true,
             });
           } else {
+            setAuthLoading(false);
             navigate("/admin/login", { replace: true });
             return;
           }
@@ -93,84 +99,79 @@ const AdminDashboard = () => {
           const adminData = adminDoc.data();
 
           if (!adminData.isActive) {
+            setAuthLoading(false);
             navigate("/admin/login", { replace: true });
             return;
           }
 
           setCurrentAdmin(adminData);
         }
+
+        // Load scoring settings (admin can control via Firestore collection: scoring/current)
+        try {
+          const scoringDoc = await getDoc(doc(db, "scoring", "current"));
+          if (scoringDoc.exists()) {
+            const data = scoringDoc.data();
+            setScoringConfig({
+              tiers:
+                Array.isArray(data.tiers) && data.tiers.length > 0
+                  ? data.tiers
+                  : [50, 40, 30, 20, 15],
+              defaultPoints: Number.isFinite(data.defaultPoints)
+                ? data.defaultPoints
+                : 10,
+            });
+            setTiersInput(
+              (Array.isArray(data.tiers) && data.tiers.length > 0
+                ? data.tiers
+                : [50, 40, 30, 20, 15]
+              ).join(",")
+            );
+            setDefaultPointsInput(
+              String(
+                Number.isFinite(data.defaultPoints) ? data.defaultPoints : 10
+              )
+            );
+          }
+        } catch (e) {
+          console.warn("Scoring settings not found, using defaults.");
+        }
+
+        // Load available scoring profiles (exclude 'current')
+        try {
+          const snap = await getDocs(collection(db, "scoring"));
+          const list = snap.docs
+            .filter((d) => d.id !== "current")
+            .map((d) => ({ id: d.id, ...(d.data() || {}) }));
+          setScoringProfiles(list);
+        } catch (e) {
+          console.warn("Could not load scoring profiles", e);
+        }
+
+        // Listen to reports collection
+        const q = query(
+          collection(db, "reports"),
+          orderBy("createdAt", "desc")
+        );
+        const unsubscribeReports = onSnapshot(q, (snapshot) => {
+          const reportsData = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setReports(reportsData);
+          setLoading(false);
+        });
+
+        setAuthLoading(false);
       } catch (error) {
         console.error("Error checking admin access:", error);
+        setAuthLoading(false);
         navigate("/admin/login", { replace: true });
-        return;
       }
+    });
 
-      // Load scoring settings (admin can control via Firestore collection: scoring/current)
-      try {
-        const scoringDoc = await getDoc(doc(db, "scoring", "current"));
-        if (scoringDoc.exists()) {
-          const data = scoringDoc.data();
-          setScoringConfig({
-            tiers:
-              Array.isArray(data.tiers) && data.tiers.length > 0
-                ? data.tiers
-                : [50, 40, 30, 20, 15],
-            defaultPoints: Number.isFinite(data.defaultPoints)
-              ? data.defaultPoints
-              : 10,
-          });
-          setTiersInput(
-            (Array.isArray(data.tiers) && data.tiers.length > 0
-              ? data.tiers
-              : [50, 40, 30, 20, 15]
-            ).join(",")
-          );
-          setDefaultPointsInput(
-            String(
-              Number.isFinite(data.defaultPoints) ? data.defaultPoints : 10
-            )
-          );
-        }
-      } catch (e) {
-        console.warn("Scoring settings not found, using defaults.");
-      }
-
-      // Load available scoring profiles (exclude 'current')
-      try {
-        const snap = await getDocs(collection(db, "scoring"));
-        const list = snap.docs
-          .filter((d) => d.id !== "current")
-          .map((d) => ({ id: d.id, ...(d.data() || {}) }));
-        setScoringProfiles(list);
-      } catch (e) {
-        console.warn("Could not load scoring profiles", e);
-      }
-
-      // Listen to reports collection
-      const q = query(collection(db, "reports"), orderBy("createdAt", "desc"));
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const reportsData = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setReports(reportsData);
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    };
-
-    checkAdminAccess();
+    return () => unsubscribeAuth();
   }, [navigate]);
-
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      navigate("/admin/login", { replace: true });
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
 
   const handleSaveScoring = async () => {
     try {
@@ -377,37 +378,33 @@ const AdminDashboard = () => {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
-      <GradientBackground
-        className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
-        dir="rtl"
-      >
-        <AnimatedCard>
-          <GlassCard className="p-10 text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-              className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"
-            />
-            <h2 className="text-xl font-semibold text-gray-700">
-              جاري التحميل...
-            </h2>
-          </GlassCard>
-        </AnimatedCard>
-      </GradientBackground>
+      <AdminLayout currentAdmin={currentAdmin}>
+        <div className="flex items-center justify-center py-12">
+          <AnimatedCard>
+            <GlassCard className="p-10 text-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"
+              />
+              <h2 className="text-xl font-semibold text-gray-700">
+                جاري التحميل...
+              </h2>
+            </GlassCard>
+          </AnimatedCard>
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <GradientBackground
-      className="min-h-screen py-12 px-4 sm:px-6 lg:px-8"
-      dir="rtl"
-    >
+    <AdminLayout currentAdmin={currentAdmin}>
       <div className="max-w-7xl mx-auto">
         {/* Scoring Settings - removed as requested */}
         {false && currentAdmin && (
@@ -566,40 +563,11 @@ const AdminDashboard = () => {
         >
           <div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              لوحة تحكم المدير
+              إدارة البلاغات
             </h1>
-            <p className="text-xl text-gray-600">إدارة البلاغات والمراجعة</p>
-            {currentAdmin && (
-              <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
-                <span>مرحباً، {currentAdmin.name}</span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                  {getRoleDisplayName(currentAdmin.role)}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="flex gap-4">
-            {currentAdmin &&
-              hasPermission(currentAdmin.role, PERMISSIONS.VIEW_ADMINS) && (
-                <motion.button
-                  onClick={() => navigate("/admin/management")}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
-                >
-                  <FaUsers className="w-5 h-5" />
-                  إدارة المديرين
-                </motion.button>
-              )}
-            <motion.button
-              onClick={handleSignOut}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors duration-300"
-            >
-              <FaSignOutAlt className="w-5 h-5" />
-              تسجيل الخروج
-            </motion.button>
+            <p className="text-xl text-gray-600">
+              مراجعة وموافقة على البلاغات المقدمة
+            </p>
           </div>
         </motion.div>
 
@@ -824,7 +792,7 @@ const AdminDashboard = () => {
           </div>
         )}
       </div>
-    </GradientBackground>
+    </AdminLayout>
   );
 };
 

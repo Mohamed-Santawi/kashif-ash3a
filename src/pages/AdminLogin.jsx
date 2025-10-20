@@ -50,16 +50,44 @@ const AdminLogin = () => {
       );
       const user = userCredential.user;
 
-      // Check if it's the super admin
+      // Check if it's the super admin or a sub-admin
       if (formData.email === "admin@mansa.com") {
         // Super admin - allow access
         console.log("Super admin login successful");
       } else {
-        // For now, only allow super admin
-        setError("ليس لديك صلاحية للدخول كمدير");
-        await auth.signOut();
-        setLoading(false);
-        return;
+        // Check if it's a sub-admin in the admins collection
+        try {
+          const adminDoc = await getDoc(doc(db, "admins", user.uid));
+
+          if (!adminDoc.exists()) {
+            setError("ليس لديك صلاحية للدخول كمدير");
+            await auth.signOut();
+            setLoading(false);
+            return;
+          }
+
+          const adminData = adminDoc.data();
+
+          if (!adminData.isActive) {
+            setError("حسابك غير مفعل. يرجى التواصل مع المدير العام");
+            await auth.signOut();
+            setLoading(false);
+            return;
+          }
+
+          // Update last login
+          await updateDoc(doc(db, "admins", user.uid), {
+            lastLogin: serverTimestamp(),
+          });
+
+          console.log("Sub-admin login successful:", adminData.name);
+        } catch (error) {
+          console.error("Error checking admin permissions:", error);
+          setError("حدث خطأ أثناء التحقق من الصلاحيات");
+          await auth.signOut();
+          setLoading(false);
+          return;
+        }
       }
 
       // Navigate to dashboard

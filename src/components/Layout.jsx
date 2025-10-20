@@ -216,7 +216,7 @@ const Layout = ({ children }) => {
                   >
                     <Link
                       to={item.href}
-                      className={`flex items-center text-xl space-x-3 space-x-reverse px-3 py-2 rounded-lg transition-all duration-300 relative ${
+                      className={`flex items-center text-lg space-x-3 space-x-reverse px-3 py-2 rounded-lg transition-all duration-300 relative ${
                         isActive
                           ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
                           : "text-gray-700 hover:bg-white/20 hover:text-gray-900"
@@ -267,7 +267,7 @@ const Layout = ({ children }) => {
                   className="w-full cursor-pointer flex items-center space-x-3 space-x-reverse px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300"
                 >
                   <FaSignOutAlt className="w-5 h-5" />
-                  <span className="text-xl font-medium mr-2">تسجيل الخروج</span>
+                  <span className="text-lg font-medium mr-2">تسجيل الخروج</span>
                 </button>
               </motion.div>
             )}
