@@ -1,7 +1,7 @@
-import React, { lazy, Suspense, memo, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { lazy, Suspense, memo, useEffect, useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaFileAlt,
   FaChartLine,
@@ -16,13 +16,60 @@ import {
   FaGlobe,
   FaLightbulb,
   FaHandsHelping,
+  FaCalendarAlt,
+  FaEye,
+  FaTimesCircle,
+  FaInfoCircle,
+  FaLink,
+  FaUser,
 } from "react-icons/fa";
+
+// Add CSS animations
+const animationStyles = `
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .report-card {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+`;
+
+// Inject styles
+if (typeof document !== "undefined") {
+  const styleSheet = document.createElement("style");
+  styleSheet.type = "text/css";
+  styleSheet.innerText = animationStyles;
+  document.head.appendChild(styleSheet);
+}
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  limit,
+  doc,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "../utils/firebase";
 import {
   AnimatedCard,
   AnimatedSection,
   AnimatedText,
   GradientBackground,
   GlassCard,
+  InViewCard,
+  InViewText,
 } from "../components/Animations";
 
 // Lazy load heavy components
@@ -45,12 +92,183 @@ const LoadingCard = ({ children, className }) => (
 const Home = memo(() => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [recentNotifications, setRecentNotifications] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(true);
+  const [reports, setReports] = useState([]);
+  const [loadingReports, setLoadingReports] = useState(true);
+  const [reportsInitialized, setReportsInitialized] = useState(false);
+  const [livePoints, setLivePoints] = useState(0);
+  const [modalReport, setModalReport] = useState(null);
+
+  // Debug: Track reports state changes
+  useEffect(() => {
+    console.log("🔍 DEBUG - Reports state changed:", {
+      reportsCount: reports.length,
+      loadingReports,
+      reportsInitialized,
+      timestamp: new Date().toISOString(),
+      reports: reports.map((r) => ({
+        id: r.id,
+        submittedByName: r.submittedByName,
+      })),
+    });
+  }, [reports, loadingReports, reportsInitialized]);
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/login", { replace: true });
     }
   }, [user, authLoading, navigate]);
+
+  // Listen to user's live totalPoints from Firestore
+  useEffect(() => {
+    if (!user) return;
+    try {
+      const userId = user.id || user.uid;
+      console.log("🔍 DEBUG - Setting up points listener for user:", userId);
+      console.log("🔍 DEBUG - Full user object:", user);
+
+      // Check if this is an old hardcoded ID
+      if (userId === "user-1" || userId === "admin-1") {
+        console.log(
+          "🔍 DEBUG - WARNING: Using old hardcoded user ID. Please logout and login again to get Firebase UID."
+        );
+        setLivePoints(0);
+        return;
+      }
+
+      // Check if this is a new generated ID (from fallback auth)
+      if (userId.startsWith("user-") || userId.startsWith("admin-")) {
+        console.log("🔍 DEBUG - Using fallback auth ID:", userId);
+        // For fallback auth, we'll use localStorage points for now
+        setLivePoints(user.totalPoints || 0);
+        return;
+      }
+
+      const userDocRef = doc(db, "users", userId);
+      const unsub = onSnapshot(userDocRef, (snap) => {
+        console.log("🔍 DEBUG - Points listener fired:", {
+          exists: snap.exists(),
+          data: snap.exists() ? snap.data() : null,
+          userId: userId,
+        });
+        if (snap.exists()) {
+          const data = snap.data();
+          const points = data.totalPoints || 0;
+          console.log("🔍 DEBUG - Setting livePoints to:", points);
+          setLivePoints(points);
+        } else {
+          console.log("🔍 DEBUG - User document doesn't exist in Firestore");
+          setLivePoints(0);
+        }
+      });
+      return () => unsub();
+    } catch (e) {
+      console.error("🔍 DEBUG - Error in points listener:", e);
+    }
+  }, [user]);
+
+  // Open modal if ?report=ID present
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const reportId = params.get("report");
+    if (reportId) {
+      (async () => {
+        try {
+          const ref = doc(db, "reports", reportId);
+          const snap = await getDoc(ref);
+          if (snap.exists()) {
+            setModalReport({ id: snap.id, ...snap.data() });
+          }
+        } catch (e) {
+          // ignore
+        }
+      })();
+    } else {
+      setModalReport(null);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Listen for recent notifications
+    const notificationsQuery = query(
+      collection(db, "notifications"),
+      where("userId", "==", user.id || user.uid),
+      limit(5)
+    );
+
+    const unsubscribeNotifications = onSnapshot(
+      notificationsQuery,
+      (snapshot) => {
+        const notificationList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Sort by createdAt in descending order (most recent first)
+        const sortedNotifications = notificationList.sort((a, b) => {
+          const aTime = a.createdAt?.toDate?.() || new Date(a.createdAt);
+          const bTime = b.createdAt?.toDate?.() || new Date(b.createdAt);
+          return bTime - aTime;
+        });
+
+        setRecentNotifications(sortedNotifications);
+        setLoadingNotifications(false);
+      }
+    );
+
+    // Listen for approved reports (public feed)
+    const reportsQuery = query(
+      collection(db, "reports"),
+      where("status", "==", "approved"),
+      limit(10)
+    );
+
+    const unsubscribeReports = onSnapshot(reportsQuery, (snapshot) => {
+      console.log("🔍 DEBUG - Firestore snapshot received:", {
+        docsCount: snapshot.docs.length,
+        timestamp: new Date().toISOString(),
+      });
+
+      const reportsList = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Sort by createdAt in descending order (most recent first)
+      const sortedReports = reportsList.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(a.createdAt);
+        const bTime = b.createdAt?.toDate?.() || new Date(b.createdAt);
+        return bTime - aTime;
+      });
+
+      console.log("🔍 DEBUG - Setting reports:", {
+        count: sortedReports.length,
+        timestamp: new Date().toISOString(),
+        reports: sortedReports.map((r) => ({
+          id: r.id,
+          submittedByName: r.submittedByName,
+        })),
+      });
+
+      setReports(sortedReports);
+      setLoadingReports(false);
+
+      // Mark as initialized after a short delay to prevent re-render
+      setTimeout(() => {
+        setReportsInitialized(true);
+        console.log("🔍 DEBUG - Reports marked as initialized");
+      }, 50);
+    });
+
+    return () => {
+      unsubscribeNotifications();
+      unsubscribeReports();
+    };
+  }, [user]);
 
   if (authLoading) {
     return (
@@ -182,7 +400,7 @@ const Home = memo(() => {
                       <span className="text-white font-medium">
                         نقاطك الحالية:{" "}
                         <span className="text-yellow-400 font-bold">
-                          {user.totalPoints}
+                          {livePoints}
                         </span>
                       </span>
                     </GlassCard>
@@ -234,61 +452,191 @@ const Home = memo(() => {
           </div>
         </AnimatedSection>
 
-        {/* Stats Grid */}
-        <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <AnimatedCard key={stat.name} delay={index * 0.05}>
-                <div className="relative overflow-hidden">
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-10`}
-                  ></div>
-                  <div className="relative p-6 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20">
-                    <div className="flex items-center justify-between mb-4">
-                      <div
-                        className={`p-3 rounded-xl bg-gradient-to-br ${stat.color} text-white`}
-                      >
-                        <stat.icon className="w-6 h-6" />
+        {/* Reports Feed */}
+        {user && (
+          <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <InViewText className="text-center mb-8" margin="-20% 0px -20% 0px">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                البلاغات المعتمدة
+              </h2>
+              <p className="text-lg text-gray-600">
+                آخر البلاغات التي تم اعتمادها من قبل الإدارة
+              </p>
+            </InViewText>
+
+            {loadingReports ? (
+              <div className="space-y-6 min-h-[400px]">
+                {[1, 2, 3].map((i) => (
+                  <div key={i}>
+                    <InViewCard className="p-6 rounded-2xl">
+                      <div className="animate-pulse">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                        <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                        <div className="h-3 bg-gray-300 rounded w-3/4"></div>
                       </div>
-                      <div
-                        className={`text-sm font-medium ${
-                          stat.changeType === "positive"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {stat.change}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 mb-1">
-                        {stat.name}
-                      </p>
-                      <p className="text-3xl font-bold text-gray-900">
-                        {stat.value}
-                      </p>
-                    </div>
+                    </InViewCard>
                   </div>
-                </div>
+                ))}
+              </div>
+            ) : reports.length === 0 ? (
+              <AnimatedCard>
+                <GlassCard className="p-12 text-center rounded-2xl">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-6"
+                  >
+                    <FaFileAlt className="w-10 h-10 text-white" />
+                  </motion.div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                    لا توجد بلاغات معتمدة بعد
+                  </h3>
+                  <p className="text-gray-600">
+                    ستظهر هنا البلاغات التي تم اعتمادها من قبل الإدارة
+                  </p>
+                </GlassCard>
               </AnimatedCard>
-            ))}
-          </div>
-        </AnimatedSection>
+            ) : !reportsInitialized ? (
+              <div className="space-y-6 min-h-[400px]">
+                {console.log(
+                  "🔍 DEBUG - Rendering loading state (not initialized)"
+                )}
+                {[1, 2, 3].map((i) => (
+                  <div key={i}>
+                    <GlassCard className="p-6 rounded-2xl">
+                      <div className="animate-pulse">
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                        <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                        <div className="h-3 bg-gray-300 rounded w-3/4"></div>
+                      </div>
+                    </GlassCard>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-6 min-h-[400px]">
+                {console.log(
+                  "🔍 DEBUG - About to render reports:",
+                  reports.length,
+                  "initialized:",
+                  reportsInitialized
+                )}
+                {reports.map((report, index) => {
+                  console.log(
+                    `🔍 DEBUG - Rendering report ${index + 1} (${report.id}):`,
+                    {
+                      index,
+                      delay: index * 0.15,
+                      submittedByName: report.submittedByName,
+                      timestamp: new Date().toISOString(),
+                    }
+                  );
+
+                  return (
+                    <InViewCard
+                      key={report.id}
+                      className="w-full"
+                      id={`report-${report.id}`}
+                    >
+                      <div className="p-6 rounded-2xl border border-white/20 transition-all duration-300 hover:shadow-xl bg-white/70 backdrop-blur">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <FaCheckCircle className="w-6 h-6 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="text-lg font-bold text-gray-900">
+                                {report.submittedByName ||
+                                  report.submittedByEmail}
+                              </h3>
+                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
+                                معتمد
+                              </span>
+                            </div>
+                            <p className="text-gray-600 mb-3 leading-relaxed">
+                              {report.description}
+                            </p>
+                            {report.rumorUrl && (
+                              <div className="mb-3">
+                                <a
+                                  href={report.rumorUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                                >
+                                  <FaLink className="w-3 h-3" />
+                                  عرض الرابط
+                                </a>
+                              </div>
+                            )}
+                            {report.imageUrl && (
+                              <div className="mb-3 w-full max-w-xs">
+                                {/* Reserve height to prevent layout shift before image load */}
+                                <div className="w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
+                                  <img
+                                    src={report.imageUrl}
+                                    alt="صورة البلاغ"
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <div className="flex items-center gap-1">
+                                <FaCalendarAlt className="w-4 h-4" />
+                                <span>
+                                  {report.createdAt
+                                    ?.toDate?.()
+                                    ?.toLocaleDateString("ar-SA") ||
+                                    new Date(
+                                      report.createdAt
+                                    ).toLocaleDateString("ar-SA")}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <FaUser className="w-4 h-4" />
+                                <span>مراجع من: {report.reviewedBy}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </InViewCard>
+                  );
+                })}
+              </div>
+            )}
+          </AnimatedSection>
+        )}
 
         {/* Features Grid */}
         <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <AnimatedText className="text-center mb-12">
+          <InViewText className="text-center mb-12" margin="-20% 0px -20% 0px">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               المميزات الرئيسية
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               اكتشف كيف يمكنك المساهمة في مكافحة الإشاعات الكاذبة
             </p>
-          </AnimatedText>
+          </InViewText>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <AnimatedCard key={feature.name} delay={index * 0.05}>
+              <InViewCard key={feature.name} className="group">
                 <motion.div whileHover={{ y: -5 }} className="group">
                   <Link to={feature.href} className="block h-full">
                     <div
@@ -308,7 +656,7 @@ const Home = memo(() => {
                     </div>
                   </Link>
                 </motion.div>
-              </AnimatedCard>
+              </InViewCard>
             ))}
           </div>
         </AnimatedSection>
@@ -373,7 +721,7 @@ const Home = memo(() => {
         {/* Call to Action */}
         {!user && (
           <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AnimatedCard>
+            <InViewCard>
               <div className="text-center py-16 px-8 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 rounded-3xl text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/20"></div>
                 <div className="relative z-10">
@@ -401,7 +749,7 @@ const Home = memo(() => {
                   </motion.div>
                 </div>
               </div>
-            </AnimatedCard>
+            </InViewCard>
           </AnimatedSection>
         )}
       </div>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import {
   FaEye,
@@ -15,6 +14,8 @@ import {
   GradientBackground,
   GlassCard,
 } from "../components/Animations";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -25,7 +26,6 @@ const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -40,12 +40,107 @@ const Login = () => {
     setLoading(true);
     setError("");
 
-    const result = await login(formData.email, formData.password);
+    try {
+      // Try Firebase Authentication first, fallback to local auth if network fails
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
 
-    if (result.success) {
-      navigate("/");
-    } else {
-      setError(result.error || "خطأ في البريد الإلكتروني أو كلمة المرور");
+        const user = userCredential.user;
+
+        // Create user data and store in localStorage
+        const userData = {
+          id: user.uid,
+          email: formData.email,
+          name: user.displayName || formData.email,
+          role: formData.email === "admin@mansa.com" ? "admin" : "user",
+          totalPoints: 0,
+        };
+
+        localStorage.setItem("user", JSON.stringify(userData));
+
+        console.log("✅ Login successful with Firebase:", userData.email);
+
+        // Force page reload to ensure proper navigation
+        window.location.href = "/";
+        return;
+      } catch (firebaseError) {
+        console.log(
+          "Firebase auth failed, trying local auth:",
+          firebaseError.code
+        );
+
+        // Fallback to local authentication for testing
+        if (firebaseError.code === "auth/network-request-failed") {
+          // Use local authentication as fallback
+          let userData = null;
+
+          if (
+            formData.email === "admin@mansa.com" &&
+            formData.password === "Admin123"
+          ) {
+            userData = {
+              id: "admin-" + Date.now(), // Generate unique ID
+              email: "admin@mansa.com",
+              name: "مدير النظام",
+              role: "admin",
+              totalPoints: 0,
+            };
+          } else if (
+            formData.email === "mosantawi@gmail.com" &&
+            formData.password === "password123"
+          ) {
+            userData = {
+              id: "user-" + Date.now(), // Generate unique ID
+              email: "mosantawi@gmail.com",
+              name: "محمد سانتاوي",
+              role: "user",
+              totalPoints: 0,
+            };
+          } else {
+            setError("خطأ في البريد الإلكتروني أو كلمة المرور");
+            setLoading(false);
+            return;
+          }
+
+          localStorage.setItem("user", JSON.stringify(userData));
+          console.log("✅ Login successful with local auth:", userData.email);
+          window.location.href = "/";
+          return;
+        }
+
+        // Re-throw other Firebase errors
+        throw firebaseError;
+      }
+    } catch (error) {
+      console.error("❌ Login error:", error);
+
+      // Handle specific Firebase errors
+      switch (error.code) {
+        case "auth/user-not-found":
+          setError("المستخدم غير موجود");
+          break;
+        case "auth/wrong-password":
+          setError("كلمة المرور غير صحيحة");
+          break;
+        case "auth/invalid-email":
+          setError("البريد الإلكتروني غير صحيح");
+          break;
+        case "auth/invalid-credential":
+          setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+          break;
+        case "auth/too-many-requests":
+          setError("تم تجاوز عدد المحاولات المسموح. حاول مرة أخرى لاحقاً");
+          break;
+        case "auth/network-request-failed":
+          setError("مشكلة في الاتصال. يرجى المحاولة مرة أخرى");
+          break;
+        default:
+          setError("حدث خطأ أثناء تسجيل الدخول");
+      }
     }
 
     setLoading(false);
@@ -220,26 +315,6 @@ const Login = () => {
                     إنشاء حساب جديد
                   </Link>
                 </p>
-              </motion.div>
-
-              {/* Test Credentials */}
-              <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="bg-blue-50 border border-blue-200 rounded-xl p-4"
-              >
-                <h4 className="text-sm font-semibold text-blue-800 mb-2">
-                  بيانات الاختبار:
-                </h4>
-                <div className="text-sm text-blue-700 space-y-1">
-                  <p>
-                    <strong>مدير:</strong> admin@manasa.com / admin123
-                  </p>
-                  <p>
-                    <strong>مستخدم:</strong> ahmed@test.com / password123
-                  </p>
-                </div>
               </motion.div>
             </motion.form>
           </GlassCard>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import {
   FaEye,
@@ -16,6 +15,8 @@ import {
   GradientBackground,
   GlassCard,
 } from "../components/Animations";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -29,7 +30,6 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -56,16 +56,48 @@ const Register = () => {
       return;
     }
 
-    const result = await register(
-      formData.name,
-      formData.email,
-      formData.password
-    );
+    try {
+      // Create user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
 
-    if (result.success) {
-      navigate("/");
-    } else {
-      setError(result.error || "حدث خطأ أثناء إنشاء الحساب");
+      const user = userCredential.user;
+
+      // Create user data and store in localStorage
+      const userData = {
+        id: user.uid,
+        email: formData.email,
+        name: formData.name,
+        role: "user",
+        totalPoints: 0,
+      };
+
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      console.log("✅ User created successfully:", user.uid);
+
+      // Force page reload to ensure proper navigation
+      window.location.href = "/";
+    } catch (error) {
+      console.error("❌ Registration error:", error);
+
+      // Handle specific Firebase errors
+      switch (error.code) {
+        case "auth/email-already-in-use":
+          setError("هذا البريد الإلكتروني مستخدم بالفعل");
+          break;
+        case "auth/invalid-email":
+          setError("البريد الإلكتروني غير صحيح");
+          break;
+        case "auth/weak-password":
+          setError("كلمة المرور ضعيفة جداً");
+          break;
+        default:
+          setError("حدث خطأ أثناء إنشاء الحساب");
+      }
     }
 
     setLoading(false);

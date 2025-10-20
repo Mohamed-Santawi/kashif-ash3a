@@ -1,7 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  doc,
+  onSnapshot,
+  updateDoc,
+  collection,
+  query,
+  where,
+  onSnapshot as onSnapshotCol,
+} from "firebase/firestore";
+import { db } from "../utils/firebase";
 import {
   FaUser,
   FaEnvelope,
@@ -24,12 +34,44 @@ import {
 const Profile = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [profile, setProfile] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [statsLive, setStatsLive] = useState({
+    totalReports: 0,
+    approvedReports: 0,
+  });
 
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/login", { replace: true });
     }
   }, [user, authLoading, navigate]);
+
+  // Listen to users/{uid}
+  useEffect(() => {
+    if (!user) return;
+    const ref = doc(db, "users", user.id || user.uid);
+    const unsub = onSnapshot(ref, (snap) => {
+      if (snap.exists()) setProfile({ id: snap.id, ...snap.data() });
+    });
+    return () => unsub();
+  }, [user]);
+
+  // Listen to reports stats for this user
+  useEffect(() => {
+    if (!user) return;
+    const q = query(
+      collection(db, "reports"),
+      where("submittedBy", "==", user.id || user.uid)
+    );
+    const unsub = onSnapshotCol(q, (snapshot) => {
+      const list = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const total = list.length;
+      const approved = list.filter((r) => r.status === "approved").length;
+      setStatsLive({ totalReports: total, approvedReports: approved });
+    });
+    return () => unsub();
+  }, [user]);
 
   if (authLoading) {
     return (
@@ -57,28 +99,35 @@ const Profile = () => {
   const stats = [
     {
       name: "إجمالي النقاط",
-      value: user.totalPoints,
+      value: profile?.totalPoints ?? 0,
       icon: FaStar,
       color: "from-yellow-500 to-orange-500",
       bgColor: "bg-yellow-50",
     },
     {
       name: "البلاغات المرسلة",
-      value: 12,
+      value: statsLive.totalReports,
       icon: FaHistory,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50",
     },
     {
       name: "البلاغات الصحيحة",
-      value: 8,
+      value: statsLive.approvedReports,
       icon: FaTrophy,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",
     },
     {
       name: "مستوى الثقة",
-      value: "عالية",
+      value:
+        statsLive.totalReports > 0
+          ? Math.round(
+              ((statsLive.approvedReports || 0) /
+                (statsLive.totalReports || 1)) *
+                100
+            ) + "%"
+          : "—",
       icon: FaShieldAlt,
       color: "from-purple-500 to-purple-600",
       bgColor: "bg-purple-50",
@@ -117,7 +166,7 @@ const Profile = () => {
                   transition={{ delay: 0.2, duration: 0.5 }}
                   className="text-4xl font-bold text-gray-900 mb-2"
                 >
-                  {user.name}
+                  {profile?.name || user?.name || "—"}
                 </motion.h1>
                 <motion.p
                   initial={{ y: -20, opacity: 0 }}
@@ -126,7 +175,7 @@ const Profile = () => {
                   className="text-xl text-gray-600 mb-4 flex items-center justify-center lg:justify-start gap-2"
                 >
                   <FaEnvelope className="w-5 h-5" />
-                  {user.email}
+                  {profile?.email || user?.email}
                 </motion.p>
                 <motion.div
                   initial={{ y: -20, opacity: 0 }}
@@ -136,9 +185,9 @@ const Profile = () => {
                 >
                   <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-bold">
                     <FaStar className="w-5 h-5" />
-                    {user.totalPoints} نقطة
+                    {profile?.totalPoints ?? 0} نقطة
                   </div>
-                  {user.role === "admin" && (
+                  {(profile?.role || user?.role) === "admin" && (
                     <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold">
                       <FaShieldAlt className="w-5 h-5" />
                       مدير النظام
@@ -147,14 +196,49 @@ const Profile = () => {
                 </motion.div>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300"
-              >
-                <FaCog className="w-5 h-5" />
-                إعدادات الحساب
-              </motion.button>
+              {/* Edit name inline */}
+              <div className="w-full lg:w-auto">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={profile?.name || ""}
+                    onChange={(e) =>
+                      setProfile((p) => ({
+                        ...(p || {}),
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="اسمك"
+                    className="px-4 py-3 border rounded-lg w-full lg:w-64"
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    disabled={saving || !profile}
+                    onClick={async () => {
+                      try {
+                        setSaving(true);
+                        const ref = doc(db, "users", user.id || user.uid);
+                        await updateDoc(ref, { name: profile.name || "" });
+                        // also update localStorage user for immediate reflection elsewhere
+                        const stored = localStorage.getItem("user");
+                        if (stored) {
+                          const parsed = JSON.parse(stored);
+                          parsed.name = profile.name || parsed.name;
+                          localStorage.setItem("user", JSON.stringify(parsed));
+                        }
+                      } catch (e) {
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300 disabled:opacity-60"
+                  >
+                    <FaCog className="w-5 h-5" />
+                    {saving ? "جارٍ الحفظ..." : "حفظ"}
+                  </motion.button>
+                </div>
+              </div>
             </div>
           </GlassCard>
         </AnimatedSection>

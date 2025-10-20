@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimation, useInView } from "framer-motion";
 
 // Fade in animation variants
 export const fadeInUp = {
@@ -43,8 +43,7 @@ export const AnimatedCard = ({
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 50 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
+    animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.6, delay, ease: "easeOut" }}
     className={className}
     {...props}
@@ -57,8 +56,7 @@ export const AnimatedCard = ({
 export const AnimatedSection = ({ children, className = "", ...props }) => (
   <motion.section
     initial={{ opacity: 0 }}
-    whileInView={{ opacity: 1 }}
-    viewport={{ once: true, margin: "-50px" }}
+    animate={{ opacity: 1 }}
     transition={{ duration: 0.8 }}
     className={className}
     {...props}
@@ -76,8 +74,7 @@ export const AnimatedText = ({
 }) => (
   <motion.div
     initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
+    animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.6, delay, ease: "easeOut" }}
     className={className}
     {...props}
@@ -144,10 +141,9 @@ export const GradientBackground = ({ children, className = "", ...props }) => (
 // Glass Morphism Card
 export const GlassCard = ({ children, className = "", ...props }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    whileInView={{ opacity: 1, scale: 1 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6, ease: "easeOut" }}
+    initial={{ opacity: 0, scale: 0.98 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.4, ease: "easeOut" }}
     className={`backdrop-blur-lg bg-white/20 border border-white/30 rounded-2xl shadow-xl ${className}`}
     {...props}
   >
@@ -178,11 +174,73 @@ export const AnimatedCounter = ({ value, duration = 2, className = "" }) => {
   return (
     <motion.span
       initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
+      animate={{ opacity: 1 }}
       className={className}
     >
       {count.toLocaleString()}
     </motion.span>
   );
 };
+
+// In-view Reveal (stable) - animates on scroll but renders immediately
+export const Reveal = ({
+  children,
+  className = "",
+  initial = { opacity: 0, y: 24 },
+  animate = { opacity: 1, y: 0 },
+  duration = 0.6,
+  delay = 0,
+  once = true,
+  margin = "-10% 0px -10% 0px",
+  as = "div",
+  ...props
+}) => {
+  const Tag = as;
+  const controls = useAnimation();
+  const ref = React.useRef(null);
+  const isInView = useInView(ref, { margin, once });
+
+  React.useEffect(() => {
+    if (isInView) controls.start(animate);
+  }, [isInView, controls, animate]);
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={initial}
+      animate={controls}
+      transition={{ duration, delay, ease: "easeOut" }}
+      className={className}
+      {...props}
+    >
+      <Tag>{children}</Tag>
+    </motion.div>
+  );
+};
+
+// Convenience wrappers
+export const InViewSection = ({ children, className = "", ...props }) => (
+  <Reveal as="section" className={className} {...props} />
+);
+
+export const InViewCard = ({ children, className = "", ...props }) => (
+  <Reveal
+    className={`rounded-2xl ${className}`}
+    initial={{ opacity: 0, y: 16 }}
+    animate={{ opacity: 1, y: 0 }}
+    {...props}
+  >
+    {children}
+  </Reveal>
+);
+
+export const InViewText = ({ children, className = "", ...props }) => (
+  <Reveal
+    as="div"
+    className={className}
+    initial={{ opacity: 0, y: 12 }}
+    {...props}
+  >
+    {children}
+  </Reveal>
+);

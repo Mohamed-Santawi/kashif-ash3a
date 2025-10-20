@@ -3,6 +3,17 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  setDoc,
+  getDoc,
+} from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, storage } from "../utils/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import {
   FaFileAlt,
   FaImage,
   FaLink,
@@ -18,8 +29,9 @@ import {
 } from "../components/Animations";
 
 const ReportForm = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user: contextUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [firebaseUser, setFirebaseUser] = useState(null);
   const [formData, setFormData] = useState({
     rumorUrl: "",
     description: "",
@@ -30,10 +42,19 @@ const ReportForm = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    // Listen for Firebase auth state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setFirebaseUser(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!authLoading && !contextUser) {
       navigate("/login", { replace: true });
     }
-  }, [user, authLoading, navigate]);
+  }, [contextUser, authLoading, navigate]);
 
   if (authLoading) {
     return (
@@ -97,8 +118,15 @@ const ReportForm = () => {
     setLoading(true);
     setError("");
 
-    if (!formData.rumorUrl && !formData.image) {
-      setError("يجب إدخال رابط أو رفع صورة");
+    // Validation - both URL and image are now required
+    if (!formData.rumorUrl.trim()) {
+      setError("يجب إدخال رابط الإشاعة");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.image) {
+      setError("يجب رفع صورة للإشاعة");
       setLoading(false);
       return;
     }
@@ -110,8 +138,73 @@ const ReportForm = () => {
     }
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      let imageUrl = null;
+
+      // Check if Firebase user is authenticated
+      if (!firebaseUser) {
+        setError("يجب تسجيل الدخول أولاً");
+        setLoading(false);
+        return;
+      }
+
+      // Upload image to Firebase Storage
+      if (formData.image) {
+        const imageRef = ref(
+          storage,
+          `reports/${Date.now()}_${formData.image.name}`
+        );
+        const uploadResult = await uploadBytes(imageRef, formData.image);
+        imageUrl = await getDownloadURL(uploadResult.ref);
+      }
+
+      // Save report to Firestore
+      const reportData = {
+        rumorUrl: formData.rumorUrl.trim(),
+        description: formData.description.trim(),
+        imageUrl: imageUrl,
+        submittedBy: firebaseUser?.uid || contextUser?.id,
+        submittedByEmail: firebaseUser?.email || contextUser?.email,
+        submittedByName:
+          firebaseUser?.displayName ||
+          contextUser?.name ||
+          firebaseUser?.email ||
+          contextUser?.email,
+        status: "pending", // pending, reviewed, approved, rejected
+        createdAt: serverTimestamp(),
+        reviewedAt: null,
+        reviewedBy: null,
+        adminNotes: null,
+      };
+
+      await addDoc(collection(db, "reports"), reportData);
+
+      // Create or update user document in Firestore
+      const userRef = doc(db, "users", firebaseUser.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        // Create new user document
+        await setDoc(userRef, {
+          id: firebaseUser.uid,
+          email: firebaseUser.email,
+          name: firebaseUser.displayName || firebaseUser.email,
+          totalPoints: 0,
+          totalReports: 1,
+          createdAt: serverTimestamp(),
+          lastActive: serverTimestamp(),
+        });
+      } else {
+        // Update existing user document
+        await setDoc(
+          userRef,
+          {
+            ...userDoc.data(),
+            totalReports: (userDoc.data().totalReports || 0) + 1,
+            lastActive: serverTimestamp(),
+          },
+          { merge: true }
+        );
+      }
 
       setSuccess(true);
       setFormData({
@@ -120,7 +213,8 @@ const ReportForm = () => {
         image: null,
       });
     } catch (err) {
-      setError("حدث خطأ أثناء إرسال البلاغ");
+      console.error("Error submitting report:", err);
+      setError("حدث خطأ أثناء إرسال البلاغ. يرجى المحاولة مرة أخرى");
     }
 
     setLoading(false);
@@ -225,7 +319,7 @@ const ReportForm = () => {
                   htmlFor="rumorUrl"
                   className="block text-lg font-semibold text-gray-700 mb-3"
                 >
-                  رابط الإشاعة (اختياري)
+                  رابط الإشاعة *
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
@@ -237,6 +331,7 @@ const ReportForm = () => {
                     name="rumorUrl"
                     value={formData.rumorUrl}
                     onChange={handleChange}
+                    required
                     className="block w-full pr-12 pl-4 py-4 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-lg"
                     placeholder="https://example.com/rumor-link"
                   />
@@ -253,7 +348,7 @@ const ReportForm = () => {
                   htmlFor="image"
                   className="block text-lg font-semibold text-gray-700 mb-3"
                 >
-                  صورة الإشاعة (اختياري)
+                  صورة الإشاعة *
                 </label>
                 <div className="mt-2 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-xl hover:border-gray-400 transition-colors bg-gray-50 hover:bg-gray-100">
                   <div className="space-y-4 text-center">

@@ -15,28 +15,54 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     // Check for stored user data
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing stored user:", error);
+        localStorage.removeItem("user");
+      }
     }
-    setLoading(false);
+
+    // Mark as initialized immediately to prevent blank screens
+    setInitialized(true);
+  }, []);
+
+  // Listen for storage changes (from other tabs/windows)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "user") {
+        if (e.newValue) {
+          try {
+            setUser(JSON.parse(e.newValue));
+          } catch (error) {
+            console.error("Error parsing user from storage:", error);
+          }
+        } else {
+          setUser(null);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const login = async (email, password) => {
     try {
-      setLoading(true);
-
       // Simulate API call with Firebase-like behavior
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (email === "admin@manasa.com" && password === "admin123") {
+      if (email === "admin@mansa.com" && password === "Admin123") {
         const userData = {
           id: "admin-1",
-          email: "admin@manasa.com",
+          email: "admin@mansa.com",
           name: "مدير النظام",
           role: "admin",
           totalPoints: 0,
@@ -64,15 +90,11 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Login error:", error);
       return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
     }
   };
 
   const register = async (name, email, password) => {
     try {
-      setLoading(true);
-
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -90,8 +112,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Registration error:", error);
       return { success: false, error: error.message };
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -99,8 +119,10 @@ export const AuthProvider = ({ children }) => {
     try {
       setUser(null);
       localStorage.removeItem("user");
+      return { success: true };
     } catch (error) {
       console.error("Logout error:", error);
+      return { success: false, error: error.message };
     }
   };
 
@@ -124,6 +146,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUserPoints,
     loading,
+    initialized,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

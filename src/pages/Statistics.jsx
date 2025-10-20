@@ -16,20 +16,69 @@ import {
   FaArrowUp,
   FaArrowDown,
   FaMinus,
+  FaCrown,
+  FaMedal,
+  FaAward,
 } from "react-icons/fa";
 import {
   AnimatedCard,
-  AnimatedSection,
   AnimatedText,
   GradientBackground,
   GlassCard,
   AnimatedCounter,
+  InViewCard,
+  InViewText,
 } from "../components/Animations";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  limit,
+  doc,
+} from "firebase/firestore";
+import { db } from "../utils/firebase";
 
 const Statistics = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [timeRange, setTimeRange] = useState("week");
+  const [userStats, setUserStats] = useState({
+    totalReports: 0,
+    correctReports: 0,
+    incorrectReports: 0,
+    totalPoints: user?.totalPoints || 0,
+    accuracy: 0,
+    rank: 0,
+    totalUsers: 0,
+  });
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
+  const [weeklyData, setWeeklyData] = useState([
+    { day: "السبت", reports: 0, points: 0 },
+    { day: "الأحد", reports: 0, points: 0 },
+    { day: "الاثنين", reports: 0, points: 0 },
+    { day: "الثلاثاء", reports: 0, points: 0 },
+    { day: "الأربعاء", reports: 0, points: 0 },
+    { day: "الخميس", reports: 0, points: 0 },
+    { day: "الجمعة", reports: 0, points: 0 },
+  ]);
+  const [monthlyData, setMonthlyData] = useState([
+    { month: "يناير", reports: 0, points: 0 },
+    { month: "فبراير", reports: 0, points: 0 },
+    { month: "مارس", reports: 0, points: 0 },
+    { month: "أبريل", reports: 0, points: 0 },
+    { month: "مايو", reports: 0, points: 0 },
+    { month: "يونيو", reports: 0, points: 0 },
+    { month: "يوليو", reports: 0, points: 0 },
+    { month: "أغسطس", reports: 0, points: 0 },
+    { month: "سبتمبر", reports: 0, points: 0 },
+    { month: "أكتوبر", reports: 0, points: 0 },
+    { month: "نوفمبر", reports: 0, points: 0 },
+    { month: "ديسمبر", reports: 0, points: 0 },
+  ]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -37,7 +86,178 @@ const Statistics = () => {
     }
   }, [user, authLoading, navigate]);
 
-  if (authLoading) {
+  useEffect(() => {
+    if (!user) return;
+
+    // Listen for user reports
+    const reportsQuery = query(
+      collection(db, "reports"),
+      where("submittedBy", "==", user.id)
+    );
+
+    const unsubscribeReports = onSnapshot(reportsQuery, (snapshot) => {
+      const reports = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Sort by createdAt in descending order (most recent first)
+      const sortedReports = reports.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(a.createdAt);
+        const bTime = b.createdAt?.toDate?.() || new Date(b.createdAt);
+        return bTime - aTime;
+      });
+
+      const totalReports = sortedReports.length;
+      const correctReports = sortedReports.filter(
+        (r) => r.status === "approved"
+      ).length;
+      const incorrectReports = sortedReports.filter(
+        (r) => r.status === "rejected"
+      ).length;
+      const accuracy =
+        totalReports > 0
+          ? Math.round((correctReports / totalReports) * 100)
+          : 0;
+
+      setUserStats((prev) => ({
+        ...prev,
+        totalReports,
+        correctReports,
+        incorrectReports,
+        accuracy,
+      }));
+
+      // ---- Build dynamic weekly data (last 7 days) ----
+      const arDays = [
+        "الأحد",
+        "الاثنين",
+        "الثلاثاء",
+        "الأربعاء",
+        "الخميس",
+        "الجمعة",
+        "السبت",
+      ]; // JS getDay(): 0 Sunday ... 6 Saturday
+      const weekTemplate = [
+        { day: "السبت", reports: 0, points: 0 },
+        { day: "الأحد", reports: 0, points: 0 },
+        { day: "الاثنين", reports: 0, points: 0 },
+        { day: "الثلاثاء", reports: 0, points: 0 },
+        { day: "الأربعاء", reports: 0, points: 0 },
+        { day: "الخميس", reports: 0, points: 0 },
+        { day: "الجمعة", reports: 0, points: 0 },
+      ];
+
+      const now = new Date();
+      const sevenDaysAgo = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - 6
+      );
+      const weekBuckets = [...weekTemplate];
+
+      sortedReports.forEach((r) => {
+        const created = r.createdAt?.toDate?.() || new Date(r.createdAt);
+        if (created >= sevenDaysAgo && created <= now) {
+          const dayIndex = created.getDay(); // 0..6
+          const arName = arDays[dayIndex];
+          const bucketIndex = weekBuckets.findIndex((d) => d.day === arName);
+          if (bucketIndex !== -1) {
+            weekBuckets[bucketIndex].reports += 1;
+            if (r.status === "approved")
+              weekBuckets[bucketIndex].points += r.pointsAwarded || 10;
+          }
+        }
+      });
+
+      setWeeklyData(weekBuckets);
+
+      // ---- Build dynamic monthly data for current year ----
+      const months = [
+        "يناير",
+        "فبراير",
+        "مارس",
+        "أبريل",
+        "مايو",
+        "يونيو",
+        "يوليو",
+        "أغسطس",
+        "سبتمبر",
+        "أكتوبر",
+        "نوفمبر",
+        "ديسمبر",
+      ];
+      const yearBuckets = months.map((m) => ({
+        month: m,
+        reports: 0,
+        points: 0,
+      }));
+      sortedReports.forEach((r) => {
+        const created = r.createdAt?.toDate?.() || new Date(r.createdAt);
+        const mIndex = created.getMonth();
+        yearBuckets[mIndex].reports += 1;
+        if (r.status === "approved")
+          yearBuckets[mIndex].points += r.pointsAwarded || 10;
+      });
+      setMonthlyData(yearBuckets);
+    });
+
+    // Listen for leaderboard (top 10 users) and user points
+    const leaderboardQuery = query(collection(db, "users"), limit(10));
+
+    const unsubscribeLeaderboard = onSnapshot(leaderboardQuery, (snapshot) => {
+      const users = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Sort by totalPoints in descending order (highest first)
+      const sortedUsers = users.sort((a, b) => {
+        const aPoints = a.totalPoints || 0;
+        const bPoints = b.totalPoints || 0;
+        return bPoints - aPoints;
+      });
+
+      // Add rank to sorted users
+      const rankedUsers = sortedUsers.map((user, index) => ({
+        ...user,
+        rank: index + 1,
+      }));
+
+      setLeaderboard(rankedUsers);
+
+      // Find current user's rank
+      const userRank = rankedUsers.findIndex((u) => u.id === user.id) + 1;
+      setUserStats((prev) => ({
+        ...prev,
+        rank: userRank || rankedUsers.length + 1,
+        totalUsers: rankedUsers.length,
+      }));
+
+      setLoading(false);
+      setInitialized(true);
+    });
+
+    // Listen to current user document for live totalPoints
+    const userDocRef = doc(db, "users", user.id);
+    const userDocUnsub = onSnapshot(userDocRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setUserStats((prev) => ({
+          ...prev,
+          totalPoints: data.totalPoints || 0,
+        }));
+      }
+    });
+
+    return () => {
+      unsubscribeReports();
+      unsubscribeLeaderboard();
+      userDocUnsub();
+    };
+  }, [user]);
+
+  if (authLoading || loading) {
     return (
       <GradientBackground className="min-h-screen flex items-center justify-center">
         <AnimatedCard>
@@ -60,42 +280,7 @@ const Statistics = () => {
     );
   }
 
-  const stats = {
-    totalReports: 24,
-    correctReports: 18,
-    incorrectReports: 6,
-    totalPoints: user?.totalPoints || 0,
-    accuracy: 75,
-    rank: 15,
-    totalUsers: 150,
-  };
-
-  const weeklyData = [
-    { day: "السبت", reports: 3, points: 15 },
-    { day: "الأحد", reports: 5, points: 25 },
-    { day: "الاثنين", reports: 2, points: 10 },
-    { day: "الثلاثاء", reports: 4, points: 20 },
-    { day: "الأربعاء", reports: 6, points: 30 },
-    { day: "الخميس", reports: 3, points: 15 },
-    { day: "الجمعة", reports: 1, points: 5 },
-  ];
-
-  const monthlyData = [
-    { month: "يناير", reports: 45, points: 225 },
-    { month: "فبراير", reports: 52, points: 260 },
-    { month: "مارس", reports: 38, points: 190 },
-    { month: "أبريل", reports: 61, points: 305 },
-    { month: "مايو", reports: 48, points: 240 },
-    { month: "يونيو", reports: 55, points: 275 },
-  ];
-
-  const leaderboard = [
-    { rank: 1, name: "أحمد محمد", points: 450, reports: 25 },
-    { rank: 2, name: "فاطمة علي", points: 420, reports: 23 },
-    { rank: 3, name: "محمد حسن", points: 380, reports: 21 },
-    { rank: 4, name: "سارة أحمد", points: 350, reports: 19 },
-    { rank: 5, name: "علي محمود", points: 320, reports: 18 },
-  ];
+  const stats = userStats;
 
   const currentData = timeRange === "week" ? weeklyData : monthlyData;
   const maxReports = Math.max(...currentData.map((d) => d.reports));
@@ -104,9 +289,16 @@ const Statistics = () => {
   return (
     <GradientBackground className="min-h-screen">
       <div className="space-y-8" dir="rtl">
+        {!initialized && (
+          <div className="max-w-7xl mx-auto px-4">
+            <GlassCard className="p-6 rounded-2xl">
+              <p className="text-gray-600">جاري تهيئة الصفحة...</p>
+            </GlassCard>
+          </div>
+        )}
         {/* Header */}
-        <AnimatedSection>
-          <GlassCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+        <div>
+          <InViewCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <motion.div
@@ -157,11 +349,11 @@ const Statistics = () => {
                 ))}
               </div>
             </div>
-          </GlassCard>
-        </AnimatedSection>
+          </InViewCard>
+        </div>
 
         {/* Stats Cards */}
-        <AnimatedSection>
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               {
@@ -193,7 +385,11 @@ const Statistics = () => {
               },
               {
                 name: "دقة التقدير",
-                value: `${stats.accuracy}%`,
+                value: `${
+                  Number.isFinite(stats.accuracy)
+                    ? Math.round(stats.accuracy)
+                    : 0
+                }%`,
                 icon: FaTrophy,
                 color: "from-purple-500 to-purple-600",
                 bgColor: "bg-purple-50",
@@ -201,13 +397,7 @@ const Statistics = () => {
                 trend: "up",
               },
             ].map((stat, index) => (
-              <motion.div
-                key={stat.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
-                whileHover={{ y: -5 }}
-              >
+              <InViewCard key={stat.name}>
                 <GlassCard
                   className={`p-6 rounded-2xl ${stat.bgColor} border border-white/20 hover:shadow-xl transition-all duration-300`}
                 >
@@ -245,26 +435,24 @@ const Statistics = () => {
                       {stat.name}
                     </p>
                     <p className="text-2xl font-bold text-gray-900">
-                      <AnimatedCounter
-                        value={typeof stat.value === "number" ? stat.value : 0}
-                      />
-                      {typeof stat.value === "string" &&
-                      stat.value.includes("%")
-                        ? stat.value
-                        : ""}
+                      {typeof stat.value === "number" ? (
+                        <AnimatedCounter value={stat.value} />
+                      ) : (
+                        stat.value
+                      )}
                     </p>
                   </div>
                 </GlassCard>
-              </motion.div>
+              </InViewCard>
             ))}
           </div>
-        </AnimatedSection>
+        </div>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Reports Chart */}
-          <AnimatedSection>
-            <GlassCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+          <div>
+            <InViewCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
               <motion.h2
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -309,12 +497,12 @@ const Statistics = () => {
                   </motion.div>
                 ))}
               </div>
-            </GlassCard>
-          </AnimatedSection>
+            </InViewCard>
+          </div>
 
           {/* Points Chart */}
-          <AnimatedSection>
-            <GlassCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+          <div>
+            <InViewCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
               <motion.h2
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -359,13 +547,13 @@ const Statistics = () => {
                   </motion.div>
                 ))}
               </div>
-            </GlassCard>
-          </AnimatedSection>
+            </InViewCard>
+          </div>
         </div>
 
         {/* Leaderboard */}
-        <AnimatedSection>
-          <GlassCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+        <div>
+          <InViewCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
             <motion.h2
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -378,12 +566,14 @@ const Statistics = () => {
             <div className="space-y-4">
               {leaderboard.map((user, index) => (
                 <motion.div
-                  key={user.rank}
+                  key={user.id}
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
                   className={`flex items-center justify-between p-4 rounded-xl transition-all duration-300 ${
-                    user.rank <= 3
+                    user.id === user.id
+                      ? "bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200"
+                      : user.rank <= 3
                       ? "bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200"
                       : "bg-white/50 border border-white/30"
                   }`}
@@ -400,18 +590,28 @@ const Statistics = () => {
                           : "bg-gradient-to-br from-blue-500 to-blue-600"
                       }`}
                     >
-                      {user.rank}
+                      {user.rank === 1 && <FaCrown className="w-5 h-5" />}
+                      {user.rank === 2 && <FaMedal className="w-5 h-5" />}
+                      {user.rank === 3 && <FaAward className="w-5 h-5" />}
+                      {user.rank > 3 && user.rank}
                     </div>
                     <div>
-                      <h3 className="font-bold text-gray-900">{user.name}</h3>
+                      <h3 className="font-bold text-gray-900">
+                        {user.name || user.email}
+                        {user.id === user.id && (
+                          <span className="text-blue-600 text-sm mr-2">
+                            (أنت)
+                          </span>
+                        )}
+                      </h3>
                       <p className="text-sm text-gray-600">
-                        {user.reports} بلاغ
+                        {user.totalReports || 0} بلاغ
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="text-lg font-bold text-gray-900">
-                      {user.points} نقطة
+                      {user.totalPoints || 0} نقطة
                     </p>
                     {user.rank <= 3 && (
                       <p className="text-sm text-yellow-600 font-medium">
@@ -422,8 +622,38 @@ const Statistics = () => {
                 </motion.div>
               ))}
             </div>
-          </GlassCard>
-        </AnimatedSection>
+
+            {/* Current User Rank */}
+            {stats.rank > 10 && (
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.5 }}
+                className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      {stats.rank}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900">{user.name}</h4>
+                      <p className="text-sm text-gray-600">رتبتك الحالية</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-gray-900">
+                      {stats.totalPoints} نقطة
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      من أصل {stats.totalUsers} مستخدم
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </InViewCard>
+        </div>
       </div>
     </GradientBackground>
   );
