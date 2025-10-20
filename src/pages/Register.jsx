@@ -259,7 +259,7 @@ const Register = () => {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 left-0 pl-3 flex items-center"
+                    className="absolute inset-y-0 left-0 pl-3 flex items-center cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
@@ -300,7 +300,7 @@ const Register = () => {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 left-0 pl-3 flex items-center"
+                    className="absolute inset-y-0 left-0 pl-3 flex items-center cursor-pointer"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (

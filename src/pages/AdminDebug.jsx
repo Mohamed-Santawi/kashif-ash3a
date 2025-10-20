@@ -74,7 +74,7 @@ const AdminDebug = () => {
           <button
             onClick={testLogin}
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Testing..." : "Test Login"}
           </button>
@@ -82,7 +82,7 @@ const AdminDebug = () => {
           <button
             onClick={createAdmin}
             disabled={loading}
-            className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-50"
+            className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Creating..." : "Create Admin"}
           </button>
@@ -90,7 +90,7 @@ const AdminDebug = () => {
           <button
             onClick={resetPassword}
             disabled={loading}
-            className="w-full bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700 disabled:opacity-50"
+            className="w-full bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Sending..." : "Send Password Reset"}
           </button>

@@ -245,7 +245,7 @@ const AdminLogin = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 left-0 pl-4 flex items-center"
+                    className="absolute inset-y-0 left-0 pl-4 flex items-center cursor-pointer"
                   >
                     {showPassword ? (
                       <FaEyeSlash className="h-6 w-6 text-gray-400 hover:text-gray-600" />
@@ -352,7 +352,7 @@ const AdminLogin = () => {
                 <button
                   type="button"
                   onClick={() => navigate("/")}
-                  className="text-gray-600 hover:text-gray-800 transition-colors duration-300"
+                  className="text-gray-600 hover:text-gray-800 transition-colors duration-300 cursor-pointer"
                 >
                   العودة إلى الموقع الرئيسي
                 </button>

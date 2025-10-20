@@ -482,7 +482,7 @@ const AdminDashboard = () => {
                         ]);
                         setNewProfileName("");
                       }}
-                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer"
                     >
                       حفظ كملف جديد
                     </button>
@@ -532,7 +532,7 @@ const AdminDashboard = () => {
                           setTimeout(() => setSaveMsg(""), 2500);
                         }
                       }}
-                      className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg"
+                      className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg cursor-pointer"
                     >
                       تحميل الملف وتعيينه
                     </button>
@@ -543,7 +543,7 @@ const AdminDashboard = () => {
                 <button
                   onClick={handleSaveScoring}
                   disabled={savingScoring}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg disabled:opacity-60"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg disabled:opacity-60 cursor-pointer"
                 >
                   {savingScoring ? "جاري الحفظ..." : "حفظ الإعدادات"}
                 </button>
@@ -618,7 +618,7 @@ const AdminDashboard = () => {
                       onClick={() => openReportWithPreview(report)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300"
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 cursor-pointer"
                     >
                       <FaEye className="w-4 h-4" />
                       عرض التفاصيل
@@ -687,7 +687,7 @@ const AdminDashboard = () => {
                 </h2>
                 <button
                   onClick={() => setSelectedReport(null)}
-                  className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
+                  className="text-gray-500 hover:text-gray-700 text-3xl font-bold cursor-pointer"
                 >
                   ×
                 </button>
@@ -767,7 +767,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex gap-4 mt-8">
+              <div className="flex justify-center items-center gap-8 mt-8">
                 {currentAdmin &&
                   hasPermission(
                     currentAdmin.role,
@@ -779,7 +779,7 @@ const AdminDashboard = () => {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
+                      className="flex items-center justify-center cursor-pointer gap-2 px-20 bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
                     >
                       <FaCheck className="w-5 h-5" />
                       موافقة
@@ -796,7 +796,7 @@ const AdminDashboard = () => {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
+                      className="flex items-center px-20 justify-center cursor-pointer gap-2 bg-red-600 hover:bg-red-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
                     >
                       <FaTimes className="w-5 h-5" />
                       رفض
