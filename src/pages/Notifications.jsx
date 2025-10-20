@@ -151,7 +151,7 @@ const Notifications = () => {
     return (
       <GradientBackground className="min-h-screen flex items-center justify-center">
         <AnimatedCard>
-          <GlassCard className="p-10 text-center">
+          <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{
@@ -159,9 +159,9 @@ const Notifications = () => {
                 repeat: Infinity,
                 ease: "linear",
               }}
-              className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+              className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
             />
-            <h2 className="text-xl font-semibold text-gray-700">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-700">
               جاري التحميل...
             </h2>
           </GlassCard>
@@ -172,26 +172,29 @@ const Notifications = () => {
 
   return (
     <GradientBackground className="min-h-screen">
-      <div className="space-y-8" dir="rtl">
+      <div
+        className="space-y-4 sm:space-y-6 lg:space-y-8 p-3 sm:p-4 lg:p-6"
+        dir="rtl"
+      >
         {/* Header */}
         <AnimatedSection>
-          <GlassCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 sm:gap-4">
+          <GlassCard className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center"
+                  className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0"
                 >
-                  <FaBell className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                  <FaBell className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white" />
                 </motion.div>
-                <div>
+                <div className="min-w-0">
                   <motion.h1
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900"
+                    className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate"
                   >
                     الإشعارات
                   </motion.h1>
@@ -199,7 +202,7 @@ const Notifications = () => {
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
-                    className="text-sm sm:text-base text-gray-600"
+                    className="text-xs sm:text-sm lg:text-base text-gray-600 truncate"
                   >
                     {unreadCount > 0
                       ? `${unreadCount} إشعار غير مقروء`
@@ -207,13 +210,13 @@ const Notifications = () => {
                   </motion.p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 sm:gap-2 w-full sm:w-auto">
                 {unreadCount > 0 && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={markAllAsRead}
-                    className="px-3 sm:px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg sm:rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-sm sm:text-base"
+                    className="px-2 sm:px-3 lg:px-4 py-1 sm:py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg sm:rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-xs sm:text-sm lg:text-base flex-shrink-0"
                   >
                     <span className="hidden sm:inline">تعيين الكل كمقروء</span>
                     <span className="sm:hidden">تعيين الكل</span>
@@ -233,7 +236,7 @@ const Notifications = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setFilter(option.key)}
-                    className={`px-3 sm:px-4 lg:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
+                    className={`px-2 sm:px-3 lg:px-4 py-1 sm:py-2 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-xs sm:text-sm lg:text-base flex-shrink-0 ${
                       filter === option.key
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                         : "bg-white/50 text-gray-700 hover:bg-white/70"
@@ -251,19 +254,19 @@ const Notifications = () => {
         {/* Notifications List */}
         <AnimatedSection>
           {filteredNotifications.length === 0 ? (
-            <GlassCard className="p-12 text-center rounded-3xl shadow-2xl border border-white/20">
+            <GlassCard className="p-8 sm:p-10 lg:p-12 text-center rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="w-24 h-24 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
               >
-                <FaBell className="w-12 h-12 text-white" />
+                <FaBell className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white" />
               </motion.div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                 لا توجد إشعارات
               </h3>
-              <p className="text-gray-600 text-lg">
+              <p className="text-sm sm:text-base lg:text-lg text-gray-600">
                 {filter === "unread"
                   ? "لا توجد إشعارات غير مقروءة"
                   : filter === "read"
@@ -272,7 +275,7 @@ const Notifications = () => {
               </p>
             </GlassCard>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {filteredNotifications.map((notification, index) => {
                 const IconComponent = getNotificationIcon(notification.type);
                 const colorClass = getNotificationColor(notification.type);
@@ -286,31 +289,31 @@ const Notifications = () => {
                     whileHover={{ y: -2 }}
                   >
                     <GlassCard
-                      className={`relative p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg border transition-all duration-300 ${
+                      className={`relative p-3 sm:p-4 lg:p-6 rounded-lg sm:rounded-xl lg:rounded-2xl shadow-lg border transition-all duration-300 ${
                         !notification.read
                           ? "bg-blue-50/60 border-blue-200 ring-1 ring-blue-200"
                           : "bg-white/50 border-white/20"
                       }`}
                     >
                       {!notification.read && (
-                        <div className="absolute left-0 top-0 h-full w-1 bg-blue-400 rounded-l-xl sm:rounded-l-2xl" />
+                        <div className="absolute left-0 top-0 h-full w-1 bg-blue-400 rounded-l-lg sm:rounded-l-xl lg:rounded-l-2xl" />
                       )}
-                      <div className="flex items-start gap-3 sm:gap-4">
+                      <div className="flex items-start gap-2 sm:gap-3 lg:gap-4">
                         <div
                           className={`p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${colorClass} text-white flex-shrink-0`}
                         >
-                          <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                          <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
-                            <div className="flex-1">
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 lg:gap-4">
+                            <div className="flex-1 min-w-0">
                               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                                <div className="flex items-center gap-1 sm:gap-2">
+                                <div className="flex items-center gap-1 sm:gap-2 min-w-0">
                                   {!notification.read && (
-                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full" />
+                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full flex-shrink-0" />
                                   )}
                                   <h3
-                                    className={`text-base sm:text-lg font-bold ${
+                                    className={`text-sm sm:text-base lg:text-lg font-bold truncate ${
                                       !notification.read
                                         ? "text-gray-900"
                                         : "text-gray-700"
@@ -320,8 +323,8 @@ const Notifications = () => {
                                   </h3>
                                 </div>
                                 {!notification.read && (
-                                  <div className="flex items-center gap-2">
-                                    <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">
+                                  <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                                    <span className="px-1.5 sm:px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 whitespace-nowrap">
                                       غير مقروء
                                     </span>
                                     <motion.button
@@ -330,7 +333,7 @@ const Notifications = () => {
                                       onClick={() =>
                                         markAsRead(notification.id)
                                       }
-                                      className="px-2 py-1 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                                      className="px-1.5 sm:px-2 py-0.5 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap"
                                     >
                                       <span className="hidden sm:inline">
                                         تعيين كمقروء
@@ -340,13 +343,13 @@ const Notifications = () => {
                                   </div>
                                 )}
                               </div>
-                              <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
+                              <p className="text-xs sm:text-sm lg:text-base text-gray-600 mb-2 sm:mb-3 leading-relaxed break-words">
                                 {notification.message}
                               </p>
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 lg:gap-4 text-xs sm:text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
-                                  <FaCalendarAlt className="w-3 h-3 sm:w-4 sm:h-4" />
-                                  <span>
+                                  <FaCalendarAlt className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                  <span className="truncate">
                                     {notification.createdAt
                                       ?.toDate?.()
                                       ?.toLocaleDateString("ar-SA") ||
@@ -357,13 +360,15 @@ const Notifications = () => {
                                 </div>
                                 {notification.points && (
                                   <div className="flex items-center gap-1 text-yellow-600">
-                                    <FaStar className="w-3 h-3 sm:w-4 sm:h-4" />
-                                    <span>+{notification.points} نقطة</span>
+                                    <FaStar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                    <span className="whitespace-nowrap">
+                                      +{notification.points} نقطة
+                                    </span>
                                   </div>
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2 self-end sm:self-auto">
+                            <div className="flex items-center gap-1 sm:gap-2 self-end sm:self-auto flex-shrink-0">
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
@@ -391,10 +396,10 @@ const Notifications = () => {
                                     }
                                   }
                                 }}
-                                className="p-2 text-blue-600 cursor-pointer hover:bg-blue-100 rounded-lg transition-colors"
+                                className="p-1.5 sm:p-2 text-blue-600 cursor-pointer hover:bg-blue-100 rounded-lg transition-colors"
                                 title="عرض البلاغ"
                               >
-                                <FaEye className="w-4 h-4" />
+                                <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
                               </motion.button>
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
@@ -402,10 +407,10 @@ const Notifications = () => {
                                 onClick={() =>
                                   deleteNotification(notification.id)
                                 }
-                                className="p-2 text-red-600 cursor-pointer hover:bg-red-100 rounded-lg transition-colors"
+                                className="p-1.5 sm:p-2 text-red-600 cursor-pointer hover:bg-red-100 rounded-lg transition-colors"
                                 title="حذف الإشعار"
                               >
-                                <FaTrash className="w-4 h-4" />
+                                <FaTrash className="w-3 h-3 sm:w-4 sm:h-4" />
                               </motion.button>
                             </div>
                           </div>
