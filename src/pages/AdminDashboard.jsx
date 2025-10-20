@@ -66,6 +66,84 @@ const AdminDashboard = () => {
   const [expectedRank, setExpectedRank] = useState(null);
   const [expectedPoints, setExpectedPoints] = useState(null);
 
+  const updateExistingNotifications = async () => {
+    try {
+      console.log("🔄 Updating existing notifications with correct points...");
+
+      // Get all notifications
+      const notificationsSnap = await getDocs(collection(db, "notifications"));
+      const notifications = notificationsSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Get all reports to calculate correct points
+      const reportsSnap = await getDocs(collection(db, "reports"));
+      const reports = reportsSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      // Group reports by rumorUrl
+      const reportsByUrl = {};
+      reports.forEach((report) => {
+        if (report.rumorUrl) {
+          if (!reportsByUrl[report.rumorUrl]) {
+            reportsByUrl[report.rumorUrl] = [];
+          }
+          reportsByUrl[report.rumorUrl].push(report);
+        }
+      });
+
+      // Sort each group by createdAt
+      Object.keys(reportsByUrl).forEach((url) => {
+        reportsByUrl[url].sort((a, b) => {
+          const at = a.createdAt?.toDate?.() || new Date(a.createdAt);
+          const bt = b.createdAt?.toDate?.() || new Date(b.createdAt);
+          return at - bt;
+        });
+      });
+
+      let updatedCount = 0;
+
+      // Update notifications with correct points
+      for (const notification of notifications) {
+        if (notification.reportId && notification.points === 10) {
+          const report = reports.find((r) => r.id === notification.reportId);
+          if (report && report.rumorUrl) {
+            const sameReports = reportsByUrl[report.rumorUrl] || [];
+            const index = sameReports.findIndex(
+              (r) => r.id === notification.reportId
+            );
+
+            if (index >= 0) {
+              const correctPoints =
+                scoringConfig.tiers[index] ?? scoringConfig.defaultPoints;
+
+              if (correctPoints !== notification.points) {
+                await updateDoc(doc(db, "notifications", notification.id), {
+                  points: correctPoints,
+                });
+                updatedCount++;
+                console.log(
+                  `✅ Updated notification ${notification.id}: ${notification.points} → ${correctPoints} points`
+                );
+              }
+            }
+          }
+        }
+      }
+
+      console.log(
+        `🎉 Updated ${updatedCount} notifications with correct points!`
+      );
+      alert(`تم تحديث ${updatedCount} إشعار بالنقاط الصحيحة!`);
+    } catch (error) {
+      console.error("Error updating notifications:", error);
+      alert("حدث خطأ في تحديث الإشعارات");
+    }
+  };
+
   useEffect(() => {
     // Wait for auth state to be ready, then check
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
@@ -236,6 +314,7 @@ const AdminDashboard = () => {
       if (status === "approved") {
         // Determine rank by submission time among ALL reports of same rumorUrl
         let awardPoints = scoringConfig.defaultPoints; // default for after tiers
+        let same = []; // Initialize same array
         if (reportData.rumorUrl) {
           const sameRumorSnap = await getDocs(
             query(
@@ -243,7 +322,7 @@ const AdminDashboard = () => {
               where("rumorUrl", "==", reportData.rumorUrl)
             )
           );
-          const same = sameRumorSnap.docs
+          same = sameRumorSnap.docs
             .map((d) => ({ id: d.id, ...d.data() }))
             .sort((a, b) => {
               const at = a.createdAt?.toDate?.() || new Date(a.createdAt);
@@ -264,7 +343,9 @@ const AdminDashboard = () => {
         console.log("🔍 DEBUG - Points calculation:", {
           rumorUrl: reportData.rumorUrl,
           sameReportsCount: same.length,
-          reportIndex: index,
+          reportIndex: reportData.rumorUrl
+            ? same.findIndex((r) => r.id === reportId)
+            : -1,
           awardPoints: awardPoints,
           tiers: scoringConfig.tiers,
           defaultPoints: scoringConfig.defaultPoints,
@@ -419,6 +500,18 @@ const AdminDashboard = () => {
   return (
     <AdminLayout currentAdmin={currentAdmin}>
       <div className="max-w-7xl mx-auto">
+        {/* Update Existing Notifications Button */}
+        <div className="mb-6">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={updateExistingNotifications}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 cursor-pointer"
+          >
+            🔄 تحديث الإشعارات الموجودة بالنقاط الصحيحة
+          </motion.button>
+        </div>
+
         {/* Scoring Settings - removed as requested */}
         {false && currentAdmin && (
           <AnimatedCard>
