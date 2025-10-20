@@ -298,23 +298,23 @@ const Statistics = () => {
         )}
         {/* Header */}
         <div>
-          <InViewCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+          <InViewCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="w-16 h-16 bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center"
+                  className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center"
                 >
-                  <FaChartLine className="w-8 h-8 text-white" />
+                  <FaChartLine className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                 </motion.div>
                 <div>
                   <motion.h1
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    className="text-3xl font-bold text-gray-900"
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900"
                   >
                     الإحصائيات الشخصية
                   </motion.h1>
@@ -322,7 +322,7 @@ const Statistics = () => {
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
-                    className="text-gray-600"
+                    className="text-sm sm:text-base text-gray-600"
                   >
                     تابع أداءك في مكافحة الإشاعات
                   </motion.p>
@@ -330,21 +330,22 @@ const Statistics = () => {
               </div>
               <div className="flex gap-2">
                 {[
-                  { key: "week", label: "أسبوع" },
-                  { key: "month", label: "شهر" },
+                  { key: "week", label: "أسبوع", shortLabel: "أسبوع" },
+                  { key: "month", label: "شهر", shortLabel: "شهر" },
                 ].map((option) => (
                   <motion.button
                     key={option.key}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setTimeRange(option.key)}
-                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                    className={`px-3 sm:px-4 lg:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
                       timeRange === option.key
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                         : "bg-white/50 text-gray-700 hover:bg-white/70"
                     }`}
                   >
-                    {option.label}
+                    <span className="hidden sm:inline">{option.label}</span>
+                    <span className="sm:hidden">{option.shortLabel}</span>
                   </motion.button>
                 ))}
               </div>
@@ -354,7 +355,7 @@ const Statistics = () => {
 
         {/* Stats Cards */}
         <div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               {
                 name: "إجمالي البلاغات",
@@ -399,7 +400,7 @@ const Statistics = () => {
             ].map((stat, index) => (
               <InViewCard key={stat.name}>
                 <GlassCard
-                  className={`p-6 rounded-2xl ${stat.bgColor} border border-white/20 hover:shadow-xl transition-all duration-300`}
+                  className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl ${stat.bgColor} border border-white/20 hover:shadow-xl transition-all duration-300`}
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div
@@ -431,10 +432,10 @@ const Statistics = () => {
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
                       {stat.name}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                       {typeof stat.value === "number" ? (
                         <AnimatedCounter value={stat.value} />
                       ) : (
@@ -449,17 +450,17 @@ const Statistics = () => {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Reports Chart */}
           <div>
-            <InViewCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+            <InViewCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
               <motion.h2
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3"
+                className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3"
               >
-                <FaChartBar className="w-6 h-6 text-blue-600" />
+                <FaChartBar className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                 البلاغات حسب {timeRange === "week" ? "الأسبوع" : "الشهر"}
               </motion.h2>
               <div className="space-y-4">

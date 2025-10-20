@@ -264,26 +264,26 @@ const ReportForm = () => {
     >
       <div className="max-w-4xl mx-auto">
         <AnimatedCard>
-          <GlassCard className="p-10">
+          <GlassCard className="p-6 sm:p-8 lg:p-10">
             {/* Header */}
             <motion.div
               initial={{ y: -50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-10"
+              className="text-center mb-6 sm:mb-8 lg:mb-10"
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6"
+                className="w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
               >
-                <FaFileAlt className="w-10 h-10 text-white" />
+                <FaFileAlt className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 text-white" />
               </motion.div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
                 إرسال بلاغ جديد
               </h1>
-              <p className="text-xl text-gray-600">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-600 px-4">
                 أبلغ عن الإشاعات الكاذبة وساهم في بناء مجتمع أكثر وعياً
               </p>
             </motion.div>
@@ -294,7 +294,7 @@ const ReportForm = () => {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.6 }}
               onSubmit={handleSubmit}
-              className="space-y-8"
+              className="space-y-6 sm:space-y-8"
             >
               {error && (
                 <motion.div
@@ -317,13 +317,13 @@ const ReportForm = () => {
               >
                 <label
                   htmlFor="rumorUrl"
-                  className="block text-lg font-semibold text-gray-700 mb-3"
+                  className="block text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3"
                 >
                   رابط الإشاعة *
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                    <FaLink className="h-6 w-6 text-gray-400" />
+                  <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none">
+                    <FaLink className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
                   </div>
                   <input
                     type="url"
@@ -332,7 +332,7 @@ const ReportForm = () => {
                     value={formData.rumorUrl}
                     onChange={handleChange}
                     required
-                    className="block w-full pr-12 pl-4 py-4 border border-gray-300 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-lg"
+                    className="block w-full pr-10 sm:pr-12 pl-3 sm:pl-4 py-3 sm:py-4 border border-gray-300 rounded-lg sm:rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-sm sm:text-base lg:text-lg"
                     placeholder="https://example.com/rumor-link"
                   />
                 </div>
@@ -346,20 +346,21 @@ const ReportForm = () => {
               >
                 <label
                   htmlFor="image"
-                  className="block text-lg font-semibold text-gray-700 mb-3"
+                  className="block text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3"
                 >
                   صورة الإشاعة *
                 </label>
-                <div className="mt-2 flex justify-center px-6 pt-8 pb-8 border-2 border-gray-300 border-dashed rounded-xl hover:border-gray-400 transition-colors bg-gray-50 hover:bg-gray-100">
-                  <div className="space-y-4 text-center">
-                    <FaImage className="mx-auto h-16 w-16 text-gray-400" />
-                    <div className="flex text-lg text-gray-600">
+                <div className="mt-2 flex justify-center px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8 border-2 border-gray-300 border-dashed rounded-lg sm:rounded-xl hover:border-gray-400 transition-colors bg-gray-50 hover:bg-gray-100">
+                  <div className="space-y-3 sm:space-y-4 text-center">
+                    <FaImage className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
+                    <div className="flex flex-col sm:flex-row text-sm sm:text-base lg:text-lg text-gray-600 items-center gap-2 sm:gap-0">
                       <label
                         htmlFor="image"
-                        className="relative cursor-pointer bg-white rounded-xl font-semibold text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 px-6 py-3 border border-blue-300 hover:border-blue-400 transition-all duration-300"
+                        className="relative cursor-pointer bg-white rounded-lg sm:rounded-xl font-semibold text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 px-4 sm:px-6 py-2 sm:py-3 border border-blue-300 hover:border-blue-400 transition-all duration-300"
                       >
-                        <FaUpload className="w-5 h-5 ml-2 inline" />
-                        رفع صورة
+                        <FaUpload className="w-4 h-4 sm:w-5 sm:h-5 ml-1 sm:ml-2 inline" />
+                        <span className="hidden sm:inline">رفع صورة</span>
+                        <span className="sm:hidden">رفع صورة</span>
                         <input
                           id="image"
                           name="image"
@@ -369,11 +370,11 @@ const ReportForm = () => {
                           accept="image/*"
                         />
                       </label>
-                      <p className="mr-3 flex items-center">
+                      <p className="mr-0 sm:mr-3 flex items-center text-sm sm:text-base">
                         أو اسحب وأفلت هنا
                       </p>
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs sm:text-sm text-gray-500">
                       PNG, JPG, GIF حتى 5 ميجابايت
                     </p>
                     {formData.image && (

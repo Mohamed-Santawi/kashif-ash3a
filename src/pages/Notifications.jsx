@@ -175,23 +175,23 @@ const Notifications = () => {
       <div className="space-y-8" dir="rtl">
         {/* Header */}
         <AnimatedSection>
-          <GlassCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
+          <GlassCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center"
+                  className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center"
                 >
-                  <FaBell className="w-8 h-8 text-white" />
+                  <FaBell className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                 </motion.div>
                 <div>
                   <motion.h1
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
-                    className="text-3xl font-bold text-gray-900"
+                    className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900"
                   >
                     الإشعارات
                   </motion.h1>
@@ -199,7 +199,7 @@ const Notifications = () => {
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
-                    className="text-gray-600"
+                    className="text-sm sm:text-base text-gray-600"
                   >
                     {unreadCount > 0
                       ? `${unreadCount} إشعار غير مقروء`
@@ -207,34 +207,40 @@ const Notifications = () => {
                   </motion.p>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {unreadCount > 0 && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={markAllAsRead}
-                    className="px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-xl font-medium hover:shadow-lg transition-all duration-300"
+                    className="px-3 sm:px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg sm:rounded-xl font-medium hover:shadow-lg transition-all duration-300 text-sm sm:text-base"
                   >
-                    تعيين الكل كمقروء
+                    <span className="hidden sm:inline">تعيين الكل كمقروء</span>
+                    <span className="sm:hidden">تعيين الكل</span>
                   </motion.button>
                 )}
                 {[
-                  { key: "all", label: "الكل" },
-                  { key: "unread", label: "غير مقروء" },
-                  { key: "read", label: "مقروء" },
+                  { key: "all", label: "الكل", shortLabel: "الكل" },
+                  {
+                    key: "unread",
+                    label: "غير مقروء",
+                    shortLabel: "غير مقروء",
+                  },
+                  { key: "read", label: "مقروء", shortLabel: "مقروء" },
                 ].map((option) => (
                   <motion.button
                     key={option.key}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setFilter(option.key)}
-                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                    className={`px-3 sm:px-4 lg:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base ${
                       filter === option.key
                         ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg"
                         : "bg-white/50 text-gray-700 hover:bg-white/70"
                     }`}
                   >
-                    {option.label}
+                    <span className="hidden sm:inline">{option.label}</span>
+                    <span className="sm:hidden">{option.shortLabel}</span>
                   </motion.button>
                 ))}
               </div>
@@ -280,59 +286,66 @@ const Notifications = () => {
                     whileHover={{ y: -2 }}
                   >
                     <GlassCard
-                      className={`relative p-6 rounded-2xl shadow-lg border transition-all duration-300 ${
+                      className={`relative p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-lg border transition-all duration-300 ${
                         !notification.read
                           ? "bg-blue-50/60 border-blue-200 ring-1 ring-blue-200"
                           : "bg-white/50 border-white/20"
                       }`}
                     >
                       {!notification.read && (
-                        <div className="absolute left-0 top-0 h-full w-1 bg-blue-400 rounded-l-2xl" />
+                        <div className="absolute left-0 top-0 h-full w-1 bg-blue-400 rounded-l-xl sm:rounded-l-2xl" />
                       )}
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-3 sm:gap-4">
                         <div
-                          className={`p-3 rounded-xl bg-gradient-to-br ${colorClass} text-white flex-shrink-0`}
+                          className={`p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${colorClass} text-white flex-shrink-0`}
                         >
-                          <IconComponent className="w-6 h-6" />
+                          <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4">
+                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                {!notification.read && (
-                                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                                )}
-                                <h3
-                                  className={`text-lg font-bold ${
-                                    !notification.read
-                                      ? "text-gray-900"
-                                      : "text-gray-700"
-                                  }`}
-                                >
-                                  {notification.title}
-                                </h3>
-                                {!notification.read && (
-                                  <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">
-                                    غير مقروء
-                                  </span>
-                                )}
-                                {!notification.read && (
-                                  <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={() => markAsRead(notification.id)}
-                                    className="ml-2 px-2 py-1 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                                <div className="flex items-center gap-1 sm:gap-2">
+                                  {!notification.read && (
+                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full" />
+                                  )}
+                                  <h3
+                                    className={`text-base sm:text-lg font-bold ${
+                                      !notification.read
+                                        ? "text-gray-900"
+                                        : "text-gray-700"
+                                    }`}
                                   >
-                                    تعيين كمقروء
-                                  </motion.button>
+                                    {notification.title}
+                                  </h3>
+                                </div>
+                                {!notification.read && (
+                                  <div className="flex items-center gap-2">
+                                    <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">
+                                      غير مقروء
+                                    </span>
+                                    <motion.button
+                                      whileHover={{ scale: 1.05 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() =>
+                                        markAsRead(notification.id)
+                                      }
+                                      className="px-2 py-1 text-xs rounded-md bg-blue-600 text-white hover:bg-blue-700"
+                                    >
+                                      <span className="hidden sm:inline">
+                                        تعيين كمقروء
+                                      </span>
+                                      <span className="sm:hidden">مقروء</span>
+                                    </motion.button>
+                                  </div>
                                 )}
                               </div>
-                              <p className="text-gray-600 mb-3 leading-relaxed">
+                              <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
                                 {notification.message}
                               </p>
-                              <div className="flex items-center gap-4 text-sm text-gray-500">
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
-                                  <FaCalendarAlt className="w-4 h-4" />
+                                  <FaCalendarAlt className="w-3 h-3 sm:w-4 sm:h-4" />
                                   <span>
                                     {notification.createdAt
                                       ?.toDate?.()
@@ -344,13 +357,13 @@ const Notifications = () => {
                                 </div>
                                 {notification.points && (
                                   <div className="flex items-center gap-1 text-yellow-600">
-                                    <FaStar className="w-4 h-4" />
+                                    <FaStar className="w-3 h-3 sm:w-4 sm:h-4" />
                                     <span>+{notification.points} نقطة</span>
                                   </div>
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 self-end sm:self-auto">
                               <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
@@ -407,29 +420,29 @@ const Notifications = () => {
         </AnimatedSection>
 
         {modalReport && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-2xl p-8 w-full max-w-7xl max-h-[95vh] overflow-y-auto"
+              className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 w-full max-w-7xl max-h-[95vh] overflow-y-auto"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-3xl font-bold text-gray-900">
+              <div className="flex justify-between items-center mb-4 sm:mb-6">
+                <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                   تفاصيل البلاغ
                 </h3>
                 <button
                   onClick={() => setModalReport(null)}
-                  className="text-gray-500 cursor-pointer hover:text-gray-700 text-3xl font-bold"
+                  className="text-gray-500 cursor-pointer hover:text-gray-700 text-2xl sm:text-3xl font-bold"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {/* Left Column - Text Content */}
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div>
-                    <p className="text-lg font-semibold text-gray-700 mb-2">
+                    <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2">
                       رابط الإشاعة:
                     </p>
                     {modalReport.rumorUrl ? (
@@ -437,31 +450,33 @@ const Notifications = () => {
                         href={modalReport.rumorUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-600 hover:text-blue-800 break-all text-lg underline"
+                        className="text-blue-600 hover:text-blue-800 break-all text-sm sm:text-base lg:text-lg underline"
                       >
                         {modalReport.rumorUrl}
                       </a>
                     ) : (
-                      <span className="text-gray-500 text-lg">لا يوجد</span>
+                      <span className="text-gray-500 text-sm sm:text-base lg:text-lg">
+                        لا يوجد
+                      </span>
                     )}
                   </div>
 
                   <div>
-                    <p className="text-lg font-semibold text-gray-700 mb-3">
+                    <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                       الوصف:
                     </p>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed">
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                      <p className="text-gray-800 whitespace-pre-wrap text-sm sm:text-base lg:text-lg leading-relaxed">
                         {modalReport.description || "—"}
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-lg font-semibold text-gray-700 mb-3">
+                    <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                       تاريخ الإرسال:
                     </p>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-gray-600 text-sm sm:text-base lg:text-lg">
                       {modalReport.createdAt
                         ?.toDate?.()
                         ?.toLocaleDateString("ar-SA", {
@@ -486,10 +501,10 @@ const Notifications = () => {
                 </div>
 
                 {/* Right Column - Image */}
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {modalReport.imageUrl && (
                     <div>
-                      <p className="text-lg font-semibold text-gray-700 mb-3">
+                      <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                         الصورة:
                       </p>
                       <div className="flex justify-center">
@@ -497,7 +512,7 @@ const Notifications = () => {
                           src={modalReport.imageUrl}
                           alt="صورة البلاغ"
                           className="max-w-full h-auto rounded-lg shadow-lg"
-                          style={{ maxHeight: "500px" }}
+                          style={{ maxHeight: "400px" }}
                         />
                       </div>
                     </div>

@@ -13,6 +13,8 @@ import {
   FaShieldAlt,
   FaUsers,
   FaStar,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 import { AnimatedCard, GradientBackground } from "./Animations";
 import { collection, query, where, onSnapshot, doc } from "firebase/firestore";
@@ -25,6 +27,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [livePoints, setLivePoints] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -126,14 +129,50 @@ const Layout = ({ children }) => {
   return (
     <GradientBackground className="min-h-screen">
       <div className="flex flex-col min-h-screen" dir="rtl">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white/10 backdrop-blur-lg border-b border-white/20 p-4 flex items-center justify-between">
+          <Link to="/" className="flex items-center space-x-3 space-x-reverse">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+              <span className="text-white font-bold text-lg">م</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-bold text-gray-900">
+                منصة منع الإشاعات
+              </h1>
+            </div>
+          </Link>
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 text-gray-700 hover:text-gray-900 cursor-pointer"
+          >
+            {sidebarOpen ? (
+              <FaTimes className="w-6 h-6" />
+            ) : (
+              <FaBars className="w-6 h-6" />
+            )}
+          </button>
+        </div>
+
         {/* Main Content Area */}
         <div className="flex flex-col lg:flex-row flex-1">
+          {/* Mobile Sidebar Overlay */}
+          {sidebarOpen && (
+            <div
+              className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
           {/* Sidebar */}
           <motion.aside
             initial={{ x: -300, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full lg:w-72 bg-white/10 backdrop-blur-lg border-l border-white/20 p-4 lg:min-h-screen lg:sticky lg:top-0 lg:self-start"
+            className={`w-full lg:w-72 bg-white/10 backdrop-blur-lg border-l border-white/20 p-4 lg:min-h-screen lg:sticky lg:top-0 lg:self-start ${
+              sidebarOpen
+                ? "fixed inset-y-0 right-0 z-50 lg:relative lg:z-auto"
+                : "hidden lg:block"
+            }`}
           >
             {/* Logo */}
             <motion.div
@@ -142,22 +181,31 @@ const Layout = ({ children }) => {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="mb-6"
             >
-              <Link
-                to="/"
-                className="flex items-center space-x-3 space-x-reverse"
-              >
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">م</span>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold mr-2 text-gray-900">
-                    منصة منع الإشاعات
-                  </h1>
-                  <p className="text-sm mr-2 text-gray-600">
-                    مجتمع مكافحة الإشاعات
-                  </p>
-                </div>
-              </Link>
+              <div className="flex items-center justify-between">
+                <Link
+                  to="/"
+                  className="flex items-center space-x-3 space-x-reverse"
+                >
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                    <span className="text-white font-bold text-xl">م</span>
+                  </div>
+                  <div className="hidden sm:block">
+                    <h1 className="text-xl font-bold mr-2 text-gray-900">
+                      منصة منع الإشاعات
+                    </h1>
+                    <p className="text-sm mr-2 text-gray-600">
+                      مجتمع مكافحة الإشاعات
+                    </p>
+                  </div>
+                </Link>
+                {/* Mobile Close Button */}
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden p-2 text-gray-700 hover:text-gray-900 cursor-pointer"
+                >
+                  <FaTimes className="w-5 h-5" />
+                </button>
+              </div>
             </motion.div>
 
             {/* User Info */}
@@ -169,27 +217,29 @@ const Layout = ({ children }) => {
                 className="mb-6 p-3 bg-white/20 rounded-xl border border-white/30"
               >
                 <div className="flex items-center space-x-3 space-x-reverse">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                    <FaUser className="w-6 h-6 text-white" />
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <FaUser className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold mr-2 text-gray-900">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm sm:text-base mr-2 text-gray-900 truncate">
                       {user.name}
                     </h3>
-                    <p className="text-sm mr-2 text-gray-600">{user.email}</p>
+                    <p className="text-xs sm:text-sm mr-2 text-gray-600 truncate">
+                      {user.email}
+                    </p>
                     {user.role === "user" && (
                       <div className="flex items-center mt-1">
-                        <FaStar className="w-4 h-4 mr-2 text-yellow-500 ml-1" />
-                        <span className="text-sm mr-2 font-medium text-gray-700">
+                        <FaStar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-yellow-500 ml-1" />
+                        <span className="text-xs sm:text-sm mr-2 font-medium text-gray-700">
                           {livePoints} نقطة
                         </span>
                       </div>
                     )}
                   </div>
                   {user.role === "admin" && (
-                    <div className="flex items-center">
-                      <FaShieldAlt className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-600 mr-1">
+                    <div className="flex items-center flex-shrink-0">
+                      <FaShieldAlt className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                      <span className="text-xs sm:text-sm font-medium text-blue-600 mr-1">
                         مدير
                       </span>
                     </div>
@@ -216,7 +266,8 @@ const Layout = ({ children }) => {
                   >
                     <Link
                       to={item.href}
-                      className={`flex items-center text-lg space-x-3 space-x-reverse px-3 py-2 rounded-lg transition-all duration-300 relative ${
+                      onClick={() => setSidebarOpen(false)}
+                      className={`flex items-center text-base sm:text-lg space-x-3 space-x-reverse px-3 py-2 rounded-lg transition-all duration-300 relative ${
                         isActive
                           ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
                           : "text-gray-700 hover:bg-white/20 hover:text-gray-900"
@@ -224,7 +275,7 @@ const Layout = ({ children }) => {
                     >
                       <div className="relative">
                         <item.icon
-                          className={`w-5 h-5 ml-2 ${
+                          className={`w-4 h-4 sm:w-5 sm:h-5 ml-2 ${
                             isActive ? "text-white" : "text-gray-500"
                           }`}
                         />
@@ -233,7 +284,7 @@ const Layout = ({ children }) => {
                             <motion.div
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                              className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold"
                             >
                               {unreadNotifications > 99
                                 ? "99+"
@@ -245,7 +296,7 @@ const Layout = ({ children }) => {
                       {isActive && (
                         <motion.div
                           layoutId="activeTab"
-                          className="absolute right-0 w-1 h-8 bg-white rounded-l-full"
+                          className="absolute right-0 w-1 h-6 sm:h-8 bg-white rounded-l-full"
                         />
                       )}
                     </Link>
@@ -263,11 +314,16 @@ const Layout = ({ children }) => {
                 className="mt-6"
               >
                 <button
-                  onClick={handleLogout}
+                  onClick={() => {
+                    handleLogout();
+                    setSidebarOpen(false);
+                  }}
                   className="w-full cursor-pointer flex items-center space-x-3 space-x-reverse px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300"
                 >
-                  <FaSignOutAlt className="w-5 h-5" />
-                  <span className="text-lg font-medium mr-2">تسجيل الخروج</span>
+                  <FaSignOutAlt className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-base sm:text-lg font-medium mr-2">
+                    تسجيل الخروج
+                  </span>
                 </button>
               </motion.div>
             )}
@@ -278,7 +334,7 @@ const Layout = ({ children }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="flex-1 p-4 lg:p-6"
+            className="flex-1 p-3 sm:p-4 lg:p-6"
           >
             <AnimatedCard>{children}</AnimatedCard>
           </motion.main>

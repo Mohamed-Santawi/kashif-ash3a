@@ -475,9 +475,9 @@ const AdminDashboard = () => {
   if (authLoading || loading) {
     return (
       <AdminLayout currentAdmin={currentAdmin}>
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center py-8 sm:py-12">
           <AnimatedCard>
-            <GlassCard className="p-10 text-center">
+            <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{
@@ -485,9 +485,9 @@ const AdminDashboard = () => {
                   repeat: Infinity,
                   ease: "linear",
                 }}
-                className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"
+                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4"
               />
-              <h2 className="text-xl font-semibold text-gray-700">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-700">
                 جاري التحميل...
               </h2>
             </GlassCard>
@@ -501,14 +501,17 @@ const AdminDashboard = () => {
     <AdminLayout currentAdmin={currentAdmin}>
       <div className="max-w-7xl mx-auto">
         {/* Update Existing Notifications Button */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={updateExistingNotifications}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 cursor-pointer"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 cursor-pointer text-sm sm:text-base"
           >
-            🔄 تحديث الإشعارات الموجودة بالنقاط الصحيحة
+            <span className="hidden sm:inline">
+              🔄 تحديث الإشعارات الموجودة بالنقاط الصحيحة
+            </span>
+            <span className="sm:hidden">🔄 تحديث الإشعارات</span>
           </motion.button>
         </div>
 
@@ -665,55 +668,57 @@ const AdminDashboard = () => {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="flex justify-between items-center mb-10"
+          className="flex justify-between items-center mb-6 sm:mb-8 lg:mb-10"
         >
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
               إدارة البلاغات
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600">
               مراجعة وموافقة على البلاغات المقدمة
             </p>
           </div>
         </motion.div>
 
         {/* Reports List */}
-        <div className="grid gap-6">
+        <div className="grid gap-4 sm:gap-6">
           {reports.length === 0 ? (
             <AnimatedCard>
-              <GlassCard className="p-10 text-center">
-                <FaFileAlt className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+              <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
+                <FaFileAlt className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-700 mb-2">
                   لا توجد بلاغات
                 </h3>
-                <p className="text-gray-600">لم يتم إرسال أي بلاغات بعد</p>
+                <p className="text-sm sm:text-base text-gray-600">
+                  لم يتم إرسال أي بلاغات بعد
+                </p>
               </GlassCard>
             </AnimatedCard>
           ) : (
             reports.map((report) => (
               <AnimatedCard key={report.id}>
-                <GlassCard className="p-6">
-                  <div className="flex justify-between items-start mb-4">
+                <GlassCard className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 sm:mb-4 gap-3 sm:gap-0">
                     <div className="flex-1">
-                      <div className="flex items-center gap-4 mb-2">
-                        <h3 className="text-xl font-semibold text-gray-900">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                        <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">
                           بلاغ #{report.id.slice(-8)}
                         </h3>
                         <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                          className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium self-start ${getStatusColor(
                             report.status
                           )}`}
                         >
                           {getStatusText(report.status)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-6 text-sm text-gray-600">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-600">
                         <div className="flex items-center gap-2">
-                          <FaUser className="w-4 h-4" />
+                          <FaUser className="w-3 h-3 sm:w-4 sm:h-4" />
                           {report.submittedByName}
                         </div>
                         <div className="flex items-center gap-2">
-                          <FaCalendar className="w-4 h-4" />
+                          <FaCalendar className="w-3 h-3 sm:w-4 sm:h-4" />
                           {report.createdAt
                             ?.toDate?.()
                             ?.toLocaleDateString("ar-SA") || "غير محدد"}
@@ -724,10 +729,11 @@ const AdminDashboard = () => {
                       onClick={() => openReportWithPreview(report)}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-300 cursor-pointer"
+                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors duration-300 cursor-pointer text-sm sm:text-base self-start sm:self-auto"
                     >
-                      <FaEye className="w-4 h-4" />
-                      عرض التفاصيل
+                      <FaEye className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">عرض التفاصيل</span>
+                      <span className="sm:hidden">عرض</span>
                     </motion.button>
                   </div>
 
@@ -781,83 +787,83 @@ const AdminDashboard = () => {
 
         {/* Report Details Modal */}
         {selectedReport && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-xl p-8 max-w-7xl w-full max-h-[95vh] overflow-y-auto"
+              className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 max-w-7xl w-full max-h-[95vh] overflow-y-auto"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold text-gray-900">
+              <div className="flex justify-between items-center mb-4 sm:mb-6">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
                   تفاصيل البلاغ
                 </h2>
                 <button
                   onClick={() => setSelectedReport(null)}
-                  className="text-gray-500 hover:text-gray-700 text-3xl font-bold cursor-pointer"
+                  className="text-gray-500 hover:text-gray-700 text-2xl sm:text-3xl font-bold cursor-pointer"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
                 {/* Left Column - Text Content */}
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {expectedRank && (
-                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                      <p className="font-semibold text-lg">
+                    <div className="p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                      <p className="font-semibold text-sm sm:text-base lg:text-lg">
                         ترتيب هذا البلاغ بين البلاغات لنفس الإشاعة:{" "}
                         {expectedRank}
                       </p>
-                      <p className="text-base">
+                      <p className="text-xs sm:text-sm lg:text-base">
                         النقاط المتوقعة في حال الموافقة: {expectedPoints}
                       </p>
                     </div>
                   )}
 
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                       رابط الإشاعة:
                     </h3>
                     <a
                       href={selectedReport.rumorUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 break-all text-lg underline"
+                      className="text-blue-600 hover:text-blue-800 break-all text-sm sm:text-base lg:text-lg underline"
                     >
                       {selectedReport.rumorUrl}
                     </a>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                       الوصف:
                     </h3>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed">
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                      <p className="text-gray-800 whitespace-pre-wrap text-sm sm:text-base lg:text-lg leading-relaxed">
                         {selectedReport.description}
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                       ملاحظات المدير:
                     </h3>
                     <textarea
                       value={adminNotes}
                       onChange={(e) => setAdminNotes(e.target.value)}
-                      className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-lg"
-                      rows={4}
+                      className="w-full p-3 sm:p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base lg:text-lg"
+                      rows={3}
                       placeholder="أضف ملاحظاتك هنا..."
                     />
                   </div>
                 </div>
 
                 {/* Right Column - Image */}
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {selectedReport.imageUrl && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
                         الصورة:
                       </h3>
                       <div className="flex justify-center">
@@ -865,7 +871,7 @@ const AdminDashboard = () => {
                           src={selectedReport.imageUrl}
                           alt="صورة البلاغ"
                           className="max-w-full h-auto rounded-lg shadow-lg"
-                          style={{ maxHeight: "500px" }}
+                          style={{ maxHeight: "300px" }}
                         />
                       </div>
                     </div>
@@ -873,7 +879,7 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center items-center gap-8 mt-8">
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
                 {currentAdmin &&
                   hasPermission(
                     currentAdmin.role,
@@ -885,9 +891,9 @@ const AdminDashboard = () => {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex items-center justify-center cursor-pointer gap-2 px-20 bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
+                      className="flex items-center justify-center cursor-pointer gap-2 px-8 sm:px-12 lg:px-20 bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-lg font-semibold transition-colors duration-300 text-base sm:text-lg w-full sm:w-auto"
                     >
-                      <FaCheck className="w-5 h-5" />
+                      <FaCheck className="w-4 h-4 sm:w-5 sm:h-5" />
                       موافقة
                     </motion.button>
                   )}
@@ -902,9 +908,9 @@ const AdminDashboard = () => {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex items-center px-20 justify-center cursor-pointer gap-2 bg-red-600 hover:bg-red-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
+                      className="flex items-center px-8 sm:px-12 lg:px-20 justify-center cursor-pointer gap-2 bg-red-600 hover:bg-red-700 text-white py-3 sm:py-4 rounded-lg font-semibold transition-colors duration-300 text-base sm:text-lg w-full sm:w-auto"
                     >
-                      <FaTimes className="w-5 h-5" />
+                      <FaTimes className="w-4 h-4 sm:w-5 sm:h-5" />
                       رفض
                     </motion.button>
                   )}

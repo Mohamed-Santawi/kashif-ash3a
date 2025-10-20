@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  collection,
-  query,
-  onSnapshot,
-  orderBy,
-  getDocs,
-} from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db, auth } from "../utils/firebase";
 import {
   FaUsers,
@@ -179,11 +173,14 @@ const AdminUsers = () => {
   }, [sortBy]);
 
   const getRankIcon = (index) => {
-    if (index === 0) return <FaTrophy className="w-5 h-5 text-yellow-500" />;
-    if (index === 1) return <FaMedal className="w-5 h-5 text-gray-400" />;
-    if (index === 2) return <FaAward className="w-5 h-5 text-orange-500" />;
+    if (index === 0)
+      return <FaTrophy className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" />;
+    if (index === 1)
+      return <FaMedal className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />;
+    if (index === 2)
+      return <FaAward className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />;
     return (
-      <span className="w-5 h-5 flex items-center justify-center text-sm font-bold text-gray-500">
+      <span className="w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center text-xs sm:text-sm font-bold text-gray-500">
         {index + 1}
       </span>
     );
@@ -240,11 +237,11 @@ const AdminUsers = () => {
     if (activeLinks.length === 0) return null;
 
     return (
-      <div className="mt-3">
-        <p className="text-xs font-medium text-gray-500 mb-2">
+      <div className="mt-2 sm:mt-3">
+        <p className="text-xs font-medium text-gray-500 mb-1 sm:mb-2">
           روابط التواصل الاجتماعي:
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1 sm:gap-2">
           {activeLinks.map((platform) => {
             const IconComponent = platform.icon;
             return (
@@ -253,11 +250,13 @@ const AdminUsers = () => {
                 href={socialMedia[platform.name]}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+                className="flex items-center gap-1 px-1 sm:px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
                 title={platform.label}
               >
-                <IconComponent className={`w-4 h-4 ${platform.color}`} />
-                <FaExternalLinkAlt className="w-3 h-3 text-gray-400" />
+                <IconComponent
+                  className={`w-3 h-3 sm:w-4 sm:h-4 ${platform.color}`}
+                />
+                <FaExternalLinkAlt className="w-2 h-2 sm:w-3 sm:h-3 text-gray-400" />
               </a>
             );
           })}
@@ -269,9 +268,9 @@ const AdminUsers = () => {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center py-8 sm:py-12">
           <AnimatedCard>
-            <GlassCard className="p-10 text-center">
+            <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{
@@ -279,9 +278,9 @@ const AdminUsers = () => {
                   repeat: Infinity,
                   ease: "linear",
                 }}
-                className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
               />
-              <h2 className="text-xl font-semibold text-gray-700">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-700">
                 جاري تحميل المستخدمين...
               </h2>
             </GlassCard>
@@ -299,27 +298,27 @@ const AdminUsers = () => {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 إدارة المستخدمين
               </h1>
-              <p className="text-lg text-gray-600">
+              <p className="text-base sm:text-lg text-gray-600">
                 عرض وإدارة جميع المستخدمين مع ترتيبهم حسب النقاط
               </p>
             </div>
 
             {/* Sort Options */}
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
               <label className="text-sm font-medium text-gray-700">
                 ترتيب حسب:
               </label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               >
                 <option value="points">النقاط</option>
                 <option value="reports">عدد البلاغات</option>
@@ -331,41 +330,41 @@ const AdminUsers = () => {
         </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <AnimatedCard>
-            <GlassCard className="p-6">
+            <GlassCard className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">
+                  <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
                     إجمالي المستخدمين
                   </p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                     {users.length}
                   </p>
                 </div>
-                <div className="p-3 rounded-full bg-blue-100">
-                  <FaUsers className="w-6 h-6 text-blue-700" />
+                <div className="p-2 sm:p-3 rounded-full bg-blue-100">
+                  <FaUsers className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700" />
                 </div>
               </div>
             </GlassCard>
           </AnimatedCard>
 
           <AnimatedCard>
-            <GlassCard className="p-6">
+            <GlassCard className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">
+                  <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
                     إجمالي البلاغات
                   </p>
-                  <p className="text-3xl font-bold text-gray-900">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-900">
                     {users.reduce(
                       (sum, user) => sum + (user.totalReports || 0),
                       0
                     )}
                   </p>
                 </div>
-                <div className="p-3 rounded-full bg-green-100">
-                  <FaFileAlt className="w-6 h-6 text-green-700" />
+                <div className="p-2 sm:p-3 rounded-full bg-green-100">
+                  <FaFileAlt className="w-5 h-5 sm:w-6 sm:h-6 text-green-700" />
                 </div>
               </div>
             </GlassCard>
@@ -373,50 +372,54 @@ const AdminUsers = () => {
         </div>
 
         {/* Users List */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {users.length === 0 ? (
             <AnimatedCard>
-              <GlassCard className="p-10 text-center">
-                <FaUsers className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+              <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
+                <FaUsers className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-2">
                   لا يوجد مستخدمين
                 </h3>
-                <p className="text-gray-600">لم يتم تسجيل أي مستخدمين بعد</p>
+                <p className="text-sm sm:text-base text-gray-600">
+                  لم يتم تسجيل أي مستخدمين بعد
+                </p>
               </GlassCard>
             </AnimatedCard>
           ) : (
             users.map((user, index) => (
               <AnimatedCard key={user.id}>
-                <GlassCard className={`p-6 border-2 ${getRankColor(index)}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <GlassCard
+                  className={`p-4 sm:p-6 border-2 ${getRankColor(index)}`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+                    <div className="flex items-center gap-3 sm:gap-4">
                       {/* Rank */}
-                      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100">
+                      <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex-shrink-0">
                         {getRankIcon(index)}
                       </div>
 
                       {/* User Info */}
-                      <div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-1">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 truncate">
                           {user.name || "مستخدم غير محدد"}
                         </h3>
-                        <p className="text-sm text-gray-600 mb-2">
+                        <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">
                           {user.email || user.id}
                         </p>
-                        <div className="flex items-center gap-6">
-                          <div className="flex items-center gap-2 bg-yellow-100 px-3 py-2 rounded-lg">
-                            <FaStar className="w-5 h-5 text-yellow-600" />
-                            <span className="text-lg font-bold text-yellow-700">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                          <div className="flex items-center gap-2 bg-yellow-100 px-2 sm:px-3 py-1 sm:py-2 rounded-lg">
+                            <FaStar className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                            <span className="text-sm sm:text-lg font-bold text-yellow-700">
                               {user.totalPoints || 0} نقطة
                             </span>
                           </div>
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
-                            <FaFileAlt className="w-4 h-4 text-blue-500" />
+                          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+                            <FaFileAlt className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                             <span>{user.totalReports || 0} بلاغ</span>
                           </div>
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
-                            <FaCalendar className="w-4 h-4 text-green-500" />
-                            <span>
+                          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+                            <FaCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                            <span className="truncate">
                               {user.createdAt
                                 ?.toDate?.()
                                 ?.toLocaleDateString("ar-SA") ||
@@ -430,11 +433,13 @@ const AdminUsers = () => {
                     </div>
 
                     {/* User Stats */}
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-gray-900 mb-1">
+                    <div className="text-center sm:text-right flex-shrink-0">
+                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                         #{index + 1}
                       </div>
-                      <div className="text-sm text-gray-600">الترتيب العام</div>
+                      <div className="text-xs sm:text-sm text-gray-600">
+                        الترتيب العام
+                      </div>
                     </div>
                   </div>
                 </GlassCard>

@@ -231,25 +231,25 @@ const Profile = () => {
       <div className="space-y-8" dir="rtl">
         {/* Profile Header */}
         <AnimatedSection>
-          <GlassCard className="p-8 rounded-3xl shadow-2xl border border-white/20">
-            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-6">
+          <GlassCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
+            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 sm:gap-6">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="relative"
               >
-                <div className="w-32 h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                  <FaUser className="w-16 h-16 text-white" />
+                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
+                  <FaUser className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-white" />
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setEditingProfile(!editingProfile)}
-                  className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
                   title="تعديل الملف الشخصي"
                 >
-                  <FaEdit className="w-5 h-5 text-white" />
+                  <FaEdit className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </motion.button>
               </motion.div>
 
@@ -258,7 +258,7 @@ const Profile = () => {
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.5 }}
-                  className="text-2xl font-bold text-gray-900 mb-2 truncate"
+                  className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-900 mb-2 truncate"
                 >
                   {(() => {
                     const displayName =
@@ -282,25 +282,26 @@ const Profile = () => {
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3, duration: 0.5 }}
-                  className="text-lg text-gray-600 mb-4 flex items-center justify-center lg:justify-start gap-2"
+                  className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 flex items-center justify-center lg:justify-start gap-2"
                 >
-                  <FaEnvelope className="w-5 h-5" />
+                  <FaEnvelope className="w-4 h-4 sm:w-5 sm:h-5" />
                   {profile?.email || user?.email}
                 </motion.p>
                 <motion.div
                   initial={{ y: -20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4, duration: 0.5 }}
-                  className="flex items-center justify-center lg:justify-start gap-4"
+                  className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-2 sm:gap-4"
                 >
-                  <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-bold">
-                    <FaStar className="w-5 h-5" />
+                  <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full font-bold text-sm sm:text-base">
+                    <FaStar className="w-4 h-4 sm:w-5 sm:h-5" />
                     {profile?.totalPoints ?? 0} نقطة
                   </div>
                   {(profile?.role || user?.role) === "admin" && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold">
-                      <FaShieldAlt className="w-5 h-5" />
-                      مدير النظام
+                    <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold text-sm sm:text-base">
+                      <FaShieldAlt className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="hidden sm:inline">مدير النظام</span>
+                      <span className="sm:hidden">مدير</span>
                     </div>
                   )}
                 </motion.div>
@@ -670,7 +671,7 @@ const Profile = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -681,20 +682,20 @@ const Profile = () => {
                 whileHover={{ y: -5 }}
               >
                 <GlassCard
-                  className={`p-6 rounded-2xl ${stat.bgColor} border border-white/20 hover:shadow-xl transition-all duration-300`}
+                  className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl ${stat.bgColor} border border-white/20 hover:shadow-xl transition-all duration-300`}
                 >
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <div
-                      className={`p-3 rounded-xl bg-gradient-to-br ${stat.color} text-white`}
+                      className={`p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${stat.color} text-white`}
                     >
-                      <stat.icon className="w-6 h-6" />
+                      <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
                       {stat.name}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                       {stat.value}
                     </p>
                   </div>

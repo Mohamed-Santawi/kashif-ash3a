@@ -370,11 +370,11 @@ const Home = memo(() => {
         {/* Hero Section */}
         <AnimatedSection className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 opacity-90"></div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
             <div className="text-center">
-              <AnimatedText className="mb-6">
+              <AnimatedText className="mb-4 sm:mb-6">
                 <motion.h1
-                  className="text-5xl md:text-7xl font-bold text-white mb-6"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6"
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
@@ -386,8 +386,8 @@ const Home = memo(() => {
                 </motion.h1>
               </AnimatedText>
 
-              <AnimatedText delay={0.2} className="mb-8">
-                <p className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+              <AnimatedText delay={0.2} className="mb-6 sm:mb-8">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed px-4">
                   منصة تفاعلية تسمح للمواطنين بالإبلاغ عن الإشاعات الكاذبة
                   ومكافحتها من خلال المشاركة المجتمعية
                 </p>
@@ -395,9 +395,9 @@ const Home = memo(() => {
 
               {user ? (
                 <AnimatedText delay={0.4}>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <GlassCard className="px-6 py-3">
-                      <span className="text-white font-medium">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
+                    <GlassCard className="px-4 sm:px-6 py-2 sm:py-3">
+                      <span className="text-white font-medium text-sm sm:text-base">
                         نقاطك الحالية:{" "}
                         <span className="text-yellow-400 font-bold">
                           {livePoints}
@@ -410,27 +410,31 @@ const Home = memo(() => {
                     >
                       <Link
                         to="/report"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-lg transition-all duration-300"
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:shadow-lg transition-all duration-300"
                       >
-                        <FaRocket className="text-xl" />
-                        إرسال بلاغ جديد
+                        <FaRocket className="text-lg sm:text-xl" />
+                        <span className="hidden sm:inline">
+                          إرسال بلاغ جديد
+                        </span>
+                        <span className="sm:hidden">إرسال بلاغ</span>
                       </Link>
                     </motion.div>
                   </div>
                 </AnimatedText>
               ) : (
                 <AnimatedText delay={0.4}>
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
                       <Link
                         to="/register"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-green-400 to-blue-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:shadow-lg transition-all duration-300"
+                        className="inline-flex items-center gap-2 bg-gradient-to-r from-green-400 to-blue-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:shadow-lg transition-all duration-300"
                       >
-                        <FaHandsHelping className="text-xl" />
-                        انضم إلينا
+                        <FaHandsHelping className="text-lg sm:text-xl" />
+                        <span className="hidden sm:inline">انضم إلينا</span>
+                        <span className="sm:hidden">انضم</span>
                       </Link>
                     </motion.div>
                     <motion.div
@@ -439,10 +443,11 @@ const Home = memo(() => {
                     >
                       <Link
                         to="/login"
-                        className="inline-flex items-center gap-2 border-2 border-white text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
+                        className="inline-flex items-center gap-2 border-2 border-white text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
                       >
-                        <FaGlobe className="text-xl" />
-                        تسجيل الدخول
+                        <FaGlobe className="text-lg sm:text-xl" />
+                        <span className="hidden sm:inline">تسجيل الدخول</span>
+                        <span className="sm:hidden">دخول</span>
                       </Link>
                     </motion.div>
                   </div>
@@ -455,11 +460,14 @@ const Home = memo(() => {
         {/* Reports Feed */}
         {user && (
           <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <InViewText className="text-center mb-8" margin="-20% 0px -20% 0px">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <InViewText
+              className="text-center mb-6 sm:mb-8"
+              margin="-20% 0px -20% 0px"
+            >
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
                 البلاغات المعتمدة
               </h2>
-              <p className="text-lg text-gray-600">
+              <p className="text-base sm:text-lg text-gray-600 px-4">
                 آخر البلاغات التي تم اعتمادها من قبل الإدارة
               </p>
             </InViewText>
@@ -551,22 +559,22 @@ const Home = memo(() => {
                       className="w-full"
                       id={`report-${report.id}`}
                     >
-                      <div className="p-6 rounded-2xl border border-white/20 transition-all duration-300 hover:shadow-xl bg-white/70 backdrop-blur">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                            <FaCheckCircle className="w-6 h-6 text-white" />
+                      <div className="p-4 sm:p-6 rounded-2xl border border-white/20 transition-all duration-300 hover:shadow-xl bg-white/70 backdrop-blur">
+                        <div className="flex items-start gap-3 sm:gap-4">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <FaCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-lg font-bold text-gray-900">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
+                              <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">
                                 {report.submittedByName ||
                                   report.submittedByEmail}
                               </h3>
-                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
+                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium self-start">
                                 معتمد
                               </span>
                             </div>
-                            <p className="text-gray-600 mb-3 leading-relaxed">
+                            <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
                               {report.description}
                             </p>
                             {report.rumorUrl && (
@@ -575,10 +583,13 @@ const Home = memo(() => {
                                   href={report.rumorUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1"
+                                  className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm flex items-center gap-1"
                                 >
                                   <FaLink className="w-3 h-3" />
-                                  عرض الرابط
+                                  <span className="hidden sm:inline">
+                                    عرض الرابط
+                                  </span>
+                                  <span className="sm:hidden">رابط</span>
                                 </a>
                               </div>
                             )}
@@ -595,9 +606,9 @@ const Home = memo(() => {
                                 </div>
                               </div>
                             )}
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                               <div className="flex items-center gap-1">
-                                <FaCalendarAlt className="w-4 h-4" />
+                                <FaCalendarAlt className="w-3 h-3 sm:w-4 sm:h-4" />
                                 <span>
                                   {report.createdAt
                                     ?.toDate?.()
@@ -608,8 +619,13 @@ const Home = memo(() => {
                                 </span>
                               </div>
                               <div className="flex items-center gap-1">
-                                <FaUser className="w-4 h-4" />
-                                <span>مراجع من: {report.reviewedBy}</span>
+                                <FaUser className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <span className="hidden sm:inline">
+                                  مراجع من: {report.reviewedBy}
+                                </span>
+                                <span className="sm:hidden">
+                                  {report.reviewedBy}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -625,32 +641,35 @@ const Home = memo(() => {
 
         {/* Features Grid */}
         <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <InViewText className="text-center mb-12" margin="-20% 0px -20% 0px">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <InViewText
+            className="text-center mb-8 sm:mb-12"
+            margin="-20% 0px -20% 0px"
+          >
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
               المميزات الرئيسية
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-4">
               اكتشف كيف يمكنك المساهمة في مكافحة الإشاعات الكاذبة
             </p>
           </InViewText>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <InViewCard key={feature.name} className="group">
                 <motion.div whileHover={{ y: -5 }} className="group">
                   <Link to={feature.href} className="block h-full">
                     <div
-                      className={`h-full p-8 rounded-3xl ${feature.bgColor} border border-white/20 hover:shadow-2xl transition-all duration-300 group-hover:scale-105`}
+                      className={`h-full p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl ${feature.bgColor} border border-white/20 hover:shadow-2xl transition-all duration-300 group-hover:scale-105`}
                     >
                       <div
-                        className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                        className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300`}
                       >
-                        <feature.icon className="w-8 h-8 text-white" />
+                        <feature.icon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors">
                         {feature.name}
                       </h3>
-                      <p className="text-gray-600 leading-relaxed">
+                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                         {feature.description}
                       </p>
                     </div>
