@@ -16,7 +16,8 @@ import {
   GlassCard,
 } from "../components/Animations";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "../utils/firebase";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -76,6 +77,22 @@ const Register = () => {
       };
 
       localStorage.setItem("user", JSON.stringify(userData));
+
+      // Save user data to Firestore
+      try {
+        await setDoc(doc(db, "users", user.uid), {
+          name: formData.name,
+          email: formData.email,
+          role: "user",
+          totalPoints: 0,
+          createdAt: serverTimestamp(),
+          lastActive: serverTimestamp(),
+        });
+        console.log("✅ User data saved to Firestore");
+      } catch (firestoreError) {
+        console.error("❌ Error saving to Firestore:", firestoreError);
+        // Continue anyway since localStorage is already saved
+      }
 
       console.log("✅ User created successfully:", user.uid);
 

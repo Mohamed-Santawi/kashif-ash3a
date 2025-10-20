@@ -16,6 +16,13 @@ import {
   FaTrophy,
   FaMedal,
   FaAward,
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaLinkedin,
+  FaYoutube,
+  FaTiktok,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import { AnimatedCard, GlassCard } from "../components/Animations";
 import AdminLayout from "../components/AdminLayout";
@@ -189,6 +196,76 @@ const AdminUsers = () => {
     return "bg-white border-gray-200";
   };
 
+  const renderSocialMediaLinks = (socialMedia) => {
+    if (!socialMedia) return null;
+
+    const socialPlatforms = [
+      {
+        name: "facebook",
+        icon: FaFacebook,
+        color: "text-blue-600",
+        label: "فيسبوك",
+      },
+      {
+        name: "twitter",
+        icon: FaTwitter,
+        color: "text-blue-400",
+        label: "تويتر",
+      },
+      {
+        name: "instagram",
+        icon: FaInstagram,
+        color: "text-pink-500",
+        label: "إنستغرام",
+      },
+      {
+        name: "linkedin",
+        icon: FaLinkedin,
+        color: "text-blue-700",
+        label: "لينكد إن",
+      },
+      {
+        name: "youtube",
+        icon: FaYoutube,
+        color: "text-red-600",
+        label: "يوتيوب",
+      },
+      { name: "tiktok", icon: FaTiktok, color: "text-black", label: "تيك توك" },
+    ];
+
+    const activeLinks = socialPlatforms.filter(
+      (platform) => socialMedia[platform.name]
+    );
+
+    if (activeLinks.length === 0) return null;
+
+    return (
+      <div className="mt-3">
+        <p className="text-xs font-medium text-gray-500 mb-2">
+          روابط التواصل الاجتماعي:
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {activeLinks.map((platform) => {
+            const IconComponent = platform.icon;
+            return (
+              <a
+                key={platform.name}
+                href={socialMedia[platform.name]}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
+                title={platform.label}
+              >
+                <IconComponent className={`w-4 h-4 ${platform.color}`} />
+                <FaExternalLinkAlt className="w-3 h-3 text-gray-400" />
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -348,6 +425,7 @@ const AdminUsers = () => {
                             </span>
                           </div>
                         </div>
+                        {renderSocialMediaLinks(user.socialMedia)}
                       </div>
                     </div>
 
