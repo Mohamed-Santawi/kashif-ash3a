@@ -226,13 +226,11 @@ const AdminDashboard = () => {
           status === "approved"
             ? `تم قبول البلاغ الذي أرسلته حول "${reportData.rumorUrl}". شكراً لك على مساهمتك في مكافحة الإشاعات!`
             : `تم رفض البلاغ الذي أرسلته حول "${reportData.rumorUrl}". يرجى مراجعة المعلومات المقدمة.`,
-        points: status === "approved" ? 10 : 0,
+        points: status === "approved" ? 0 : 0, // Will be updated after calculation
         read: false,
         createdAt: serverTimestamp(),
         reportId: reportId,
       };
-
-      await addDoc(collection(db, "notifications"), notificationData);
 
       // Update user points if approved - dynamic based on submission order
       if (status === "approved") {
@@ -259,6 +257,18 @@ const AdminDashboard = () => {
           const tier = scoringConfig.tiers;
           awardPoints = tier[index] ?? scoringConfig.defaultPoints;
         }
+
+        // Update notification with actual awarded points
+        notificationData.points = awardPoints;
+
+        console.log("🔍 DEBUG - Points calculation:", {
+          rumorUrl: reportData.rumorUrl,
+          sameReportsCount: same.length,
+          reportIndex: index,
+          awardPoints: awardPoints,
+          tiers: scoringConfig.tiers,
+          defaultPoints: scoringConfig.defaultPoints,
+        });
 
         const userRef = doc(db, "users", reportData.submittedBy);
         const userDoc = await getDoc(userRef);
@@ -311,6 +321,9 @@ const AdminDashboard = () => {
           createdAt: serverTimestamp(),
         });
       }
+
+      // Create notification with correct points
+      await addDoc(collection(db, "notifications"), notificationData);
 
       setSelectedReport(null);
       setAdminNotes("");
