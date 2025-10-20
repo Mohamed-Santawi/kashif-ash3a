@@ -39,16 +39,25 @@ const AdminLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("🔍 Admin Login: Form submitted");
+    console.log("🔍 Admin Login: Email:", formData.email);
+    console.log(
+      "🔍 Admin Login: Password:",
+      formData.password ? "***" : "empty"
+    );
+
     setLoading(true);
     setError("");
 
     try {
+      console.log("🔍 Admin Login: Attempting Firebase authentication...");
       const userCredential = await signInWithEmailAndPassword(
         auth,
         formData.email,
         formData.password
       );
       const user = userCredential.user;
+      console.log("🔍 Admin Login: Firebase auth successful, UID:", user.uid);
 
       // Check if it's the super admin or a sub-admin
       if (formData.email === "admin@mansa.com") {
@@ -91,9 +100,12 @@ const AdminLogin = () => {
       }
 
       // Navigate to dashboard
+      console.log("🔍 Admin Login: Navigating to dashboard...");
       navigate("/admin/dashboard", { replace: true });
     } catch (err) {
-      console.error("Login error:", err);
+      console.error("🔍 Admin Login: Login error:", err);
+      console.error("🔍 Admin Login: Error code:", err.code);
+      console.error("🔍 Admin Login: Error message:", err.message);
       switch (err.code) {
         case "auth/user-not-found":
           setError("المستخدم غير موجود");
@@ -274,6 +286,59 @@ const AdminLogin = () => {
                       تسجيل الدخول
                     </>
                   )}
+                </motion.button>
+              </motion.div>
+
+              {/* Create Admin Button */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.65 }}
+                className="text-center"
+              >
+                <motion.button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      setLoading(true);
+                      setError("");
+                      console.log("🔍 Creating admin user...");
+
+                      const { createUserWithEmailAndPassword } = await import(
+                        "firebase/auth"
+                      );
+                      const userCredential =
+                        await createUserWithEmailAndPassword(
+                          auth,
+                          "admin@mansa.com",
+                          "Admin123"
+                        );
+                      console.log(
+                        "✅ Admin user created:",
+                        userCredential.user.uid
+                      );
+                      setError(
+                        "✅ تم إنشاء حساب المدير بنجاح! يمكنك الآن تسجيل الدخول."
+                      );
+                      await auth.signOut();
+                    } catch (err) {
+                      if (err.code === "auth/email-already-in-use") {
+                        setError(
+                          "ℹ️ حساب المدير موجود بالفعل. يمكنك تسجيل الدخول."
+                        );
+                      } else {
+                        setError(`❌ خطأ في إنشاء الحساب: ${err.message}`);
+                      }
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  disabled={loading}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group relative inline-flex items-center gap-3 py-3 px-8 border border-gray-300 text-lg font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg"
+                >
+                  إنشاء حساب المدير
                 </motion.button>
               </motion.div>
 
