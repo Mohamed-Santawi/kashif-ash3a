@@ -24,7 +24,6 @@ import {
   collection,
   query,
   where,
-  orderBy,
   onSnapshot,
   doc,
   updateDoc,
@@ -371,7 +370,12 @@ const Notifications = () => {
                                           ...snap.data(),
                                         });
                                       }
-                                    } catch (e) {}
+                                    } catch (error) {
+                                      console.error(
+                                        "Error fetching report:",
+                                        error
+                                      );
+                                    }
                                   }
                                 }}
                                 className="p-2 text-blue-600 cursor-pointer hover:bg-blue-100 rounded-lg transition-colors"
@@ -407,63 +411,97 @@ const Notifications = () => {
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-2xl p-8 w-full max-w-5xl max-h-[92vh] overflow-y-auto"
+              className="bg-white rounded-2xl p-8 w-full max-w-7xl max-h-[95vh] overflow-y-auto"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-2xl font-bold text-gray-900">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-3xl font-bold text-gray-900">
                   تفاصيل البلاغ
                 </h3>
                 <button
                   onClick={() => setModalReport(null)}
-                  className="text-gray-500 cursor-pointer hover:text-gray-700 text-2xl"
+                  className="text-gray-500 cursor-pointer hover:text-gray-700 text-3xl font-bold"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">رابط الإشاعة:</p>
-                  {modalReport.rumorUrl ? (
-                    <a
-                      href={modalReport.rumorUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800 break-all"
-                    >
-                      {modalReport.rumorUrl}
-                    </a>
-                  ) : (
-                    <span className="text-gray-500">لا يوجد</span>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">الوصف:</p>
-                  <p className="text-gray-700 whitespace-pre-wrap">
-                    {modalReport.description || "—"}
-                  </p>
-                </div>
-                {modalReport.imageUrl && (
-                  <div className="flex justify-center">
-                    <img
-                      src={modalReport.imageUrl}
-                      alt="صورة البلاغ"
-                      className="w-96 h-72 object-cover rounded-lg border"
-                    />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Text Content */}
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-lg font-semibold text-gray-700 mb-2">
+                      رابط الإشاعة:
+                    </p>
+                    {modalReport.rumorUrl ? (
+                      <a
+                        href={modalReport.rumorUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-800 break-all text-lg underline"
+                      >
+                        {modalReport.rumorUrl}
+                      </a>
+                    ) : (
+                      <span className="text-gray-500 text-lg">لا يوجد</span>
+                    )}
                   </div>
-                )}
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <FaCalendarAlt className="w-4 h-4" />
-                    <span>
+
+                  <div>
+                    <p className="text-lg font-semibold text-gray-700 mb-3">
+                      الوصف:
+                    </p>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed">
+                        {modalReport.description || "—"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-lg font-semibold text-gray-700 mb-3">
+                      تاريخ الإرسال:
+                    </p>
+                    <p className="text-gray-600 text-lg">
                       {modalReport.createdAt
                         ?.toDate?.()
-                        ?.toLocaleDateString("ar-SA") ||
+                        ?.toLocaleDateString("ar-SA", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) ||
                         new Date(modalReport.createdAt).toLocaleDateString(
-                          "ar-SA"
+                          "ar-SA",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
                         )}
-                    </span>
+                    </p>
                   </div>
+                </div>
+
+                {/* Right Column - Image */}
+                <div className="space-y-6">
+                  {modalReport.imageUrl && (
+                    <div>
+                      <p className="text-lg font-semibold text-gray-700 mb-3">
+                        الصورة:
+                      </p>
+                      <div className="flex justify-center">
+                        <img
+                          src={modalReport.imageUrl}
+                          alt="صورة البلاغ"
+                          className="max-w-full h-auto rounded-lg shadow-lg"
+                          style={{ maxHeight: "500px" }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

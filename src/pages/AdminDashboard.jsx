@@ -679,76 +679,91 @@ const AdminDashboard = () => {
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-white rounded-xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl p-8 max-w-7xl w-full max-h-[95vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-3xl font-bold text-gray-900">
                   تفاصيل البلاغ
                 </h2>
                 <button
                   onClick={() => setSelectedReport(null)}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="space-y-6">
-                {expectedRank && (
-                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
-                    <p className="font-semibold">
-                      ترتيب هذا البلاغ بين البلاغات لنفس الإشاعة: {expectedRank}
-                    </p>
-                    <p className="text-sm">
-                      النقاط المتوقعة في حال الموافقة: {expectedPoints}
-                    </p>
-                  </div>
-                )}
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">
-                    رابط الإشاعة:
-                  </h3>
-                  <a
-                    href={selectedReport.rumorUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 break-all"
-                  >
-                    {selectedReport.rumorUrl}
-                  </a>
-                </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Text Content */}
+                <div className="space-y-6">
+                  {expectedRank && (
+                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                      <p className="font-semibold text-lg">
+                        ترتيب هذا البلاغ بين البلاغات لنفس الإشاعة:{" "}
+                        {expectedRank}
+                      </p>
+                      <p className="text-base">
+                        النقاط المتوقعة في حال الموافقة: {expectedPoints}
+                      </p>
+                    </div>
+                  )}
 
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">الوصف:</h3>
-                  <p className="text-gray-600 whitespace-pre-wrap">
-                    {selectedReport.description}
-                  </p>
-                </div>
-
-                {selectedReport.imageUrl && (
                   <div>
-                    <h3 className="font-semibold text-gray-700 mb-2">
-                      الصورة:
+                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                      رابط الإشاعة:
                     </h3>
-                    <img
-                      src={selectedReport.imageUrl}
-                      alt="صورة البلاغ"
-                      className="w-full max-w-md rounded-lg border"
+                    <a
+                      href={selectedReport.rumorUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 break-all text-lg underline"
+                    >
+                      {selectedReport.rumorUrl}
+                    </a>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                      الوصف:
+                    </h3>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed">
+                        {selectedReport.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                      ملاحظات المدير:
+                    </h3>
+                    <textarea
+                      value={adminNotes}
+                      onChange={(e) => setAdminNotes(e.target.value)}
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-lg"
+                      rows={4}
+                      placeholder="أضف ملاحظاتك هنا..."
                     />
                   </div>
-                )}
+                </div>
 
-                <div>
-                  <h3 className="font-semibold text-gray-700 mb-2">
-                    ملاحظات المدير:
-                  </h3>
-                  <textarea
-                    value={adminNotes}
-                    onChange={(e) => setAdminNotes(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                    rows={3}
-                    placeholder="أضف ملاحظاتك هنا..."
-                  />
+                {/* Right Column - Image */}
+                <div className="space-y-6">
+                  {selectedReport.imageUrl && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-700 mb-3">
+                        الصورة:
+                      </h3>
+                      <div className="flex justify-center">
+                        <img
+                          src={selectedReport.imageUrl}
+                          alt="صورة البلاغ"
+                          className="max-w-full h-auto rounded-lg shadow-lg"
+                          style={{ maxHeight: "500px" }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -764,7 +779,7 @@ const AdminDashboard = () => {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-colors duration-300"
+                      className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
                     >
                       <FaCheck className="w-5 h-5" />
                       موافقة
@@ -781,7 +796,7 @@ const AdminDashboard = () => {
                       }
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold transition-colors duration-300"
+                      className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white py-4 rounded-lg font-semibold transition-colors duration-300 text-lg"
                     >
                       <FaTimes className="w-5 h-5" />
                       رفض
