@@ -8,6 +8,7 @@ import {
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import NavigationGuard from "./components/NavigationGuard";
 import Home from "./pages/Home";
@@ -76,7 +77,14 @@ function App() {
                 </PublicRoute>
               }
             />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
+            />
             <Route
               path="/admin/setup"
               element={
@@ -85,9 +93,30 @@ function App() {
                 </PublicRoute>
               }
             />
-            <Route path="/admin/management" element={<AdminManagement />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/analytics" element={<AdminAnalytics />} />
+            <Route
+              path="/admin/management"
+              element={
+                <AdminProtectedRoute>
+                  <AdminManagement />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminProtectedRoute>
+                  <AdminUsers />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <AdminProtectedRoute>
+                  <AdminAnalytics />
+                </AdminProtectedRoute>
+              }
+            />
             <Route
               path="/admin/debug"
               element={
