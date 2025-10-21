@@ -228,28 +228,140 @@ const Profile = () => {
 
   return (
     <GradientBackground className="min-h-screen">
-      <div className="space-y-8" dir="rtl">
+      <div
+        className="space-y-8"
+        dir="rtl"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "32px",
+          maxWidth: "100vw",
+          overflowX: "hidden",
+          padding: "16px",
+          "@media (min-width: 640px)": {
+            padding: "24px",
+          },
+          "@media (min-width: 1024px)": {
+            padding: "32px",
+          },
+        }}
+      >
         {/* Profile Header */}
         <AnimatedSection>
-          <GlassCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
-            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-4 sm:gap-6">
+          <GlassCard
+            className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20"
+            style={{
+              padding: "16px",
+              borderRadius: "16px",
+              "@media (min-width: 640px)": {
+                padding: "24px",
+                borderRadius: "24px",
+              },
+              "@media (min-width: 1024px)": {
+                padding: "32px",
+                borderRadius: "24px",
+              },
+            }}
+          >
+            <div
+              className="flex flex-col lg:flex-row items-center lg:items-start gap-4 sm:gap-6"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "16px",
+                "@media (min-width: 640px)": {
+                  gap: "24px",
+                },
+                "@media (min-width: 1024px)": {
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                },
+              }}
+            >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5 }}
                 className="relative"
+                style={{
+                  position: "relative",
+                }}
               >
-                <div className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                  <FaUser className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-white" />
+                <div
+                  className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg"
+                  style={{
+                    width: "96px",
+                    height: "96px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow:
+                      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                    "@media (min-width: 640px)": {
+                      width: "112px",
+                      height: "112px",
+                    },
+                    "@media (min-width: 1024px)": {
+                      width: "128px",
+                      height: "128px",
+                    },
+                  }}
+                >
+                  <FaUser
+                    className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-white"
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      "@media (min-width: 640px)": {
+                        width: "56px",
+                        height: "56px",
+                      },
+                      "@media (min-width: 1024px)": {
+                        width: "64px",
+                        height: "64px",
+                      },
+                    }}
+                  />
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => setEditingProfile(!editingProfile)}
                   className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  style={{
+                    position: "absolute",
+                    bottom: "-4px",
+                    right: "-4px",
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    boxShadow:
+                      "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                    "@media (min-width: 640px)": {
+                      bottom: "-8px",
+                      right: "-8px",
+                      width: "40px",
+                      height: "40px",
+                    },
+                  }}
                   title="تعديل الملف الشخصي"
                 >
-                  <FaEdit className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <FaEdit
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-white"
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      "@media (min-width: 640px)": {
+                        width: "20px",
+                        height: "20px",
+                      },
+                    }}
+                  />
                 </motion.button>
               </motion.div>
 
@@ -672,6 +784,18 @@ const Profile = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: "16px",
+              "@media (min-width: 640px)": {
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "24px",
+              },
+              "@media (min-width: 1024px)": {
+                gridTemplateColumns: "repeat(4, 1fr)",
+              },
+            }}
           >
             {stats.map((stat, index) => (
               <motion.div
@@ -683,19 +807,67 @@ const Profile = () => {
               >
                 <GlassCard
                   className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl ${stat.bgColor} border border-white/20 hover:shadow-xl transition-all duration-300`}
+                  style={{
+                    padding: "16px",
+                    borderRadius: "12px",
+                    "@media (min-width: 640px)": {
+                      padding: "24px",
+                      borderRadius: "16px",
+                    },
+                  }}
                 >
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <div
                       className={`p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${stat.color} text-white`}
+                      style={{
+                        padding: "8px",
+                        borderRadius: "8px",
+                        "@media (min-width: 640px)": {
+                          padding: "12px",
+                          borderRadius: "12px",
+                        },
+                      }}
                     >
-                      <stat.icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <stat.icon
+                        className="w-5 h-5 sm:w-6 sm:h-6"
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          "@media (min-width: 640px)": {
+                            width: "24px",
+                            height: "24px",
+                          },
+                        }}
+                      />
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
+                    <p
+                      className="text-xs sm:text-sm font-medium text-gray-600 mb-1"
+                      style={{
+                        fontSize: "12px",
+                        fontWeight: "500",
+                        marginBottom: "4px",
+                        "@media (min-width: 640px)": {
+                          fontSize: "14px",
+                        },
+                      }}
+                    >
                       {stat.name}
                     </p>
-                    <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
+                    <p
+                      className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900"
+                      style={{
+                        fontSize: "18px",
+                        fontWeight: "bold",
+                        "@media (min-width: 640px)": {
+                          fontSize: "20px",
+                        },
+                        "@media (min-width: 1024px)": {
+                          fontSize: "24px",
+                        },
+                      }}
+                    >
                       {stat.value}
                     </p>
                   </div>

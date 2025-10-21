@@ -154,24 +154,67 @@ const AdminAnalytics = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div
+        className="max-w-7xl mx-auto"
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          width: "100%",
+          padding: "16px",
+          "@media (min-width: 640px)": {
+            padding: "24px",
+          },
+          "@media (min-width: 1024px)": {
+            padding: "32px",
+          },
+        }}
+      >
         {/* Header */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           className="mb-10"
+          style={{
+            marginBottom: "40px",
+          }}
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1
+            className="text-4xl font-bold text-gray-900 mb-2"
+            style={{
+              fontSize: "36px",
+              fontWeight: "bold",
+              marginBottom: "8px",
+            }}
+          >
             التحليلات والإحصائيات
           </h1>
-          <p className="text-xl text-gray-600">
+          <p
+            className="text-xl text-gray-600"
+            style={{
+              fontSize: "20px",
+            }}
+          >
             نظرة شاملة على أداء النظام والمستخدمين
           </p>
         </motion.div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: "24px",
+            marginBottom: "32px",
+            "@media (min-width: 768px)": {
+              gridTemplateColumns: "repeat(2, 1fr)",
+            },
+            "@media (min-width: 1024px)": {
+              gridTemplateColumns: "repeat(3, 1fr)",
+            },
+          }}
+        >
           {statCards.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -197,7 +240,17 @@ const AdminAnalytics = () => {
         </div>
 
         {/* Additional Analytics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: "24px",
+            "@media (min-width: 1024px)": {
+              gridTemplateColumns: "repeat(2, 1fr)",
+            },
+          }}
+        >
           {/* Approval Rate */}
           <AnimatedCard>
             <GlassCard className="p-6">

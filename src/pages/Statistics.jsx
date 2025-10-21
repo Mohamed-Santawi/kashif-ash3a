@@ -288,7 +288,24 @@ const Statistics = () => {
 
   return (
     <GradientBackground className="min-h-screen">
-      <div className="space-y-8" dir="rtl">
+      <div
+        className="space-y-8"
+        dir="rtl"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "32px",
+          maxWidth: "100vw",
+          overflowX: "hidden",
+          padding: "16px",
+          "@media (min-width: 640px)": {
+            padding: "24px",
+          },
+          "@media (min-width: 1024px)": {
+            padding: "32px",
+          },
+        }}
+      >
         {!initialized && (
           <div className="max-w-7xl mx-auto px-4">
             <GlassCard className="p-6 rounded-2xl">
@@ -298,16 +315,82 @@ const Statistics = () => {
         )}
         {/* Header */}
         <div>
-          <InViewCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 sm:gap-4">
+          <InViewCard
+            className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20"
+            style={{
+              padding: "16px",
+              borderRadius: "16px",
+              "@media (min-width: 640px)": {
+                padding: "24px",
+                borderRadius: "24px",
+              },
+              "@media (min-width: 1024px)": {
+                padding: "32px",
+                borderRadius: "24px",
+              },
+            }}
+          >
+            <div
+              className="flex flex-col lg:flex-row items-center justify-between gap-4"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "16px",
+                "@media (min-width: 1024px)": {
+                  flexDirection: "row",
+                },
+              }}
+            >
+              <div
+                className="flex items-center gap-3 sm:gap-4"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  "@media (min-width: 640px)": {
+                    gap: "16px",
+                  },
+                }}
+              >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5 }}
                   className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-green-600 to-blue-600 rounded-full flex items-center justify-center"
+                  style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    "@media (min-width: 640px)": {
+                      width: "56px",
+                      height: "56px",
+                    },
+                    "@media (min-width: 1024px)": {
+                      width: "64px",
+                      height: "64px",
+                    },
+                  }}
                 >
-                  <FaChartLine className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
+                  <FaChartLine
+                    className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white"
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      "@media (min-width: 640px)": {
+                        width: "28px",
+                        height: "28px",
+                      },
+                      "@media (min-width: 1024px)": {
+                        width: "32px",
+                        height: "32px",
+                      },
+                    }}
+                  />
                 </motion.div>
                 <div>
                   <motion.h1
@@ -315,6 +398,16 @@ const Statistics = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
                     className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900"
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: "bold",
+                      "@media (min-width: 640px)": {
+                        fontSize: "24px",
+                      },
+                      "@media (min-width: 1024px)": {
+                        fontSize: "30px",
+                      },
+                    }}
                   >
                     الإحصائيات الشخصية
                   </motion.h1>
@@ -323,12 +416,24 @@ const Statistics = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3, duration: 0.5 }}
                     className="text-sm sm:text-base text-gray-600"
+                    style={{
+                      fontSize: "14px",
+                      "@media (min-width: 640px)": {
+                        fontSize: "16px",
+                      },
+                    }}
                   >
                     تابع أداءك في مكافحة الإشاعات
                   </motion.p>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div
+                className="flex gap-2"
+                style={{
+                  display: "flex",
+                  gap: "8px",
+                }}
+              >
                 {[
                   { key: "week", label: "أسبوع", shortLabel: "أسبوع" },
                   { key: "month", label: "شهر", shortLabel: "شهر" },
@@ -355,7 +460,21 @@ const Statistics = () => {
 
         {/* Stats Cards */}
         <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: "16px",
+              "@media (min-width: 640px)": {
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "24px",
+              },
+              "@media (min-width: 1024px)": {
+                gridTemplateColumns: "repeat(4, 1fr)",
+              },
+            }}
+          >
             {[
               {
                 name: "إجمالي البلاغات",
@@ -450,7 +569,21 @@ const Statistics = () => {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+        <div
+          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: "16px",
+            "@media (min-width: 640px)": {
+              gap: "24px",
+            },
+            "@media (min-width: 1024px)": {
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "32px",
+            },
+          }}
+        >
           {/* Reports Chart */}
           <div>
             <InViewCard className="p-4 sm:p-6 lg:p-8 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/20">

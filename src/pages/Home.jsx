@@ -366,18 +366,78 @@ const Home = memo(() => {
 
   return (
     <GradientBackground className="min-h-screen">
-      <div className="space-y-16" dir="rtl">
+      <div
+        className="space-y-16"
+        dir="rtl"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "64px",
+          maxWidth: "100vw",
+          overflowX: "hidden",
+          "@media (max-width: 640px)": {
+            gap: "48px",
+          },
+        }}
+      >
         {/* Hero Section */}
         <AnimatedSection className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 opacity-90"></div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-            <div className="text-center">
+          <div
+            className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20"
+            style={{
+              position: "relative",
+              zIndex: "10",
+              maxWidth: "1280px",
+              margin: "0 auto",
+              paddingLeft: "16px",
+              paddingRight: "16px",
+              paddingTop: "48px",
+              paddingBottom: "48px",
+              "@media (min-width: 640px)": {
+                paddingLeft: "24px",
+                paddingRight: "24px",
+                paddingTop: "64px",
+                paddingBottom: "64px",
+              },
+              "@media (min-width: 1024px)": {
+                paddingLeft: "32px",
+                paddingRight: "32px",
+                paddingTop: "80px",
+                paddingBottom: "80px",
+              },
+            }}
+          >
+            <div
+              className="text-center"
+              style={{
+                textAlign: "center",
+              }}
+            >
               <AnimatedText className="mb-4 sm:mb-6">
                 <motion.h1
                   className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6"
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8 }}
+                  style={{
+                    fontSize: "30px",
+                    fontWeight: "bold",
+                    marginBottom: "16px",
+                    "@media (min-width: 640px)": {
+                      fontSize: "36px",
+                      marginBottom: "24px",
+                    },
+                    "@media (min-width: 768px)": {
+                      fontSize: "48px",
+                    },
+                    "@media (min-width: 1024px)": {
+                      fontSize: "60px",
+                    },
+                    "@media (min-width: 1280px)": {
+                      fontSize: "72px",
+                    },
+                  }}
                 >
                   مرحباً بك في{" "}
                   <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
@@ -459,15 +519,52 @@ const Home = memo(() => {
 
         {/* Reports Feed */}
         {user && (
-          <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection
+            className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              paddingLeft: "16px",
+              paddingRight: "16px",
+              "@media (min-width: 640px)": {
+                paddingLeft: "24px",
+                paddingRight: "24px",
+              },
+              "@media (min-width: 1024px)": {
+                paddingLeft: "32px",
+                paddingRight: "32px",
+              },
+            }}
+          >
             <InViewText
               className="text-center mb-6 sm:mb-8"
               margin="-20% 0px -20% 0px"
             >
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
+              <h2
+                className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4"
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                  marginBottom: "8px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "30px",
+                    marginBottom: "16px",
+                  },
+                }}
+              >
                 البلاغات المعتمدة
               </h2>
-              <p className="text-base sm:text-lg text-gray-600 px-4">
+              <p
+                className="text-base sm:text-lg text-gray-600 px-4"
+                style={{
+                  fontSize: "16px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "18px",
+                  },
+                }}
+              >
                 آخر البلاغات التي تم اعتمادها من قبل الإدارة
               </p>
             </InViewText>
@@ -535,7 +632,15 @@ const Home = memo(() => {
                 ))}
               </div>
             ) : (
-              <div className="space-y-6 min-h-[400px]">
+              <div
+                className="space-y-6 min-h-[400px]"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "24px",
+                  minHeight: "400px",
+                }}
+              >
                 {console.log(
                   "🔍 DEBUG - About to render reports:",
                   reports.length,
@@ -559,22 +664,119 @@ const Home = memo(() => {
                       className="w-full"
                       id={`report-${report.id}`}
                     >
-                      <div className="p-4 sm:p-6 rounded-2xl border border-white/20 transition-all duration-300 hover:shadow-xl bg-white/70 backdrop-blur">
-                        <div className="flex items-start gap-3 sm:gap-4">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                            <FaCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                      <div
+                        className="p-4 sm:p-6 rounded-2xl border border-white/20 transition-all duration-300 hover:shadow-xl bg-white/70 backdrop-blur"
+                        style={{
+                          padding: "16px",
+                          borderRadius: "16px",
+                          border: "1px solid rgba(255, 255, 255, 0.2)",
+                          backgroundColor: "rgba(255, 255, 255, 0.7)",
+                          backdropFilter: "blur(10px)",
+                          "@media (min-width: 640px)": {
+                            padding: "24px",
+                          },
+                        }}
+                      >
+                        <div
+                          className="flex items-start gap-3 sm:gap-4"
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "12px",
+                            "@media (min-width: 640px)": {
+                              gap: "16px",
+                            },
+                          }}
+                        >
+                          <div
+                            className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0"
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "50%",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: "0",
+                              "@media (min-width: 640px)": {
+                                width: "48px",
+                                height: "48px",
+                              },
+                            }}
+                          >
+                            <FaCheckCircle
+                              className="w-5 h-5 sm:w-6 sm:h-6 text-white"
+                              style={{
+                                width: "20px",
+                                height: "20px",
+                                "@media (min-width: 640px)": {
+                                  width: "24px",
+                                  height: "24px",
+                                },
+                              }}
+                            />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                              <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate">
+                          <div
+                            className="flex-1 min-w-0"
+                            style={{
+                              flex: "1",
+                              minWidth: "0",
+                            }}
+                          >
+                            <div
+                              className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2"
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "4px",
+                                marginBottom: "8px",
+                                "@media (min-width: 640px)": {
+                                  flexDirection: "row",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                },
+                              }}
+                            >
+                              <h3
+                                className="text-base sm:text-lg font-bold text-gray-900 truncate"
+                                style={{
+                                  fontSize: "16px",
+                                  fontWeight: "bold",
+                                  "@media (min-width: 640px)": {
+                                    fontSize: "18px",
+                                  },
+                                }}
+                              >
                                 {report.submittedByName ||
                                   report.submittedByEmail}
                               </h3>
-                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium self-start">
+                              <span
+                                className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium self-start"
+                                style={{
+                                  paddingLeft: "8px",
+                                  paddingRight: "8px",
+                                  paddingTop: "4px",
+                                  paddingBottom: "4px",
+                                  fontSize: "12px",
+                                  borderRadius: "9999px",
+                                  fontWeight: "500",
+                                  alignSelf: "flex-start",
+                                }}
+                              >
                                 معتمد
                               </span>
                             </div>
-                            <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
+                            <p
+                              className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed"
+                              style={{
+                                fontSize: "14px",
+                                marginBottom: "12px",
+                                lineHeight: "1.6",
+                                "@media (min-width: 640px)": {
+                                  fontSize: "16px",
+                                },
+                              }}
+                            >
                               {report.description}
                             </p>
                             {report.rumorUrl && (
@@ -653,7 +855,22 @@ const Home = memo(() => {
             </p>
           </InViewText>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr",
+              gap: "16px",
+              "@media (min-width: 640px)": {
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: "24px",
+              },
+              "@media (min-width: 1024px)": {
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "32px",
+              },
+            }}
+          >
             {features.map((feature, index) => (
               <InViewCard key={feature.name} className="group">
                 <motion.div whileHover={{ y: -5 }} className="group">

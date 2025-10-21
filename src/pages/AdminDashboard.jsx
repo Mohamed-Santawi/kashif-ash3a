@@ -499,7 +499,13 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout currentAdmin={currentAdmin}>
-      <div className="max-w-7xl mx-auto">
+      <div
+        className="w-full max-w-full mx-auto px-0"
+        style={{
+          maxWidth: "100%",
+          overflowX: "hidden",
+        }}
+      >
         {/* Update Existing Notifications Button */}
         <div className="mb-4 sm:mb-6">
           <motion.button
@@ -681,7 +687,7 @@ const AdminDashboard = () => {
         </motion.div>
 
         {/* Reports List */}
-        <div className="grid gap-4 sm:gap-6">
+        <div className="grid gap-4 sm:gap-6 w-full">
           {reports.length === 0 ? (
             <AnimatedCard>
               <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
@@ -697,7 +703,7 @@ const AdminDashboard = () => {
           ) : (
             reports.map((report) => (
               <AnimatedCard key={report.id}>
-                <GlassCard className="p-4 sm:p-6">
+                <GlassCard className="p-4 sm:p-6 w-full">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 sm:mb-4 gap-3 sm:gap-0">
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
@@ -748,7 +754,7 @@ const AdminDashboard = () => {
                           href={report.rumorUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 break-all"
+                          className="text-blue-600 hover:text-blue-800 break-all text-xs sm:text-sm"
                         >
                           {report.rumorUrl}
                         </a>
@@ -787,11 +793,45 @@ const AdminDashboard = () => {
 
         {/* Report Details Modal */}
         {selectedReport && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50"
+            style={{
+              position: "fixed",
+              top: "0",
+              left: "0",
+              right: "0",
+              bottom: "0",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+              zIndex: "50",
+              "@media (min-width: 640px)": {
+                padding: "16px",
+              },
+            }}
+          >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="bg-white rounded-xl p-4 sm:p-6 lg:p-8 max-w-7xl w-full max-h-[95vh] overflow-y-auto"
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                padding: "16px",
+                width: "100%",
+                maxWidth: "1280px",
+                maxHeight: "95vh",
+                overflowY: "auto",
+                "@media (min-width: 640px)": {
+                  borderRadius: "16px",
+                  padding: "24px",
+                },
+                "@media (min-width: 1024px)": {
+                  padding: "32px",
+                },
+              }}
             >
               <div className="flex justify-between items-center mb-4 sm:mb-6">
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
@@ -805,9 +845,33 @@ const AdminDashboard = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              <div
+                className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr",
+                  gap: "16px",
+                  "@media (min-width: 640px)": {
+                    gap: "24px",
+                  },
+                  "@media (min-width: 1024px)": {
+                    gridTemplateColumns: "repeat(2, 1fr)",
+                    gap: "32px",
+                  },
+                }}
+              >
                 {/* Left Column - Text Content */}
-                <div className="space-y-4 sm:space-y-6">
+                <div
+                  className="space-y-4 sm:space-y-6"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    "@media (min-width: 640px)": {
+                      gap: "24px",
+                    },
+                  }}
+                >
                   {expectedRank && (
                     <div className="p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
                       <p className="font-semibold text-sm sm:text-base lg:text-lg">
@@ -860,7 +924,17 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Right Column - Image */}
-                <div className="space-y-4 sm:space-y-6">
+                <div
+                  className="space-y-4 sm:space-y-6"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    "@media (min-width: 640px)": {
+                      gap: "24px",
+                    },
+                  }}
+                >
                   {selectedReport.imageUrl && (
                     <div>
                       <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
@@ -879,7 +953,27 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
+              <div
+                className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "16px",
+                  marginTop: "24px",
+                  "@media (min-width: 640px)": {
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "24px",
+                    marginTop: "32px",
+                  },
+                  "@media (min-width: 1024px)": {
+                    gap: "32px",
+                  },
+                }}
+              >
                 {currentAdmin &&
                   hasPermission(
                     currentAdmin.role,

@@ -261,29 +261,128 @@ const ReportForm = () => {
     <GradientBackground
       className="min-h-screen py-12 px-4 sm:px-6 lg:px-8"
       dir="rtl"
+      style={{
+        minHeight: "100vh",
+        paddingTop: "48px",
+        paddingBottom: "48px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        "@media (min-width: 640px)": {
+          paddingLeft: "24px",
+          paddingRight: "24px",
+        },
+        "@media (min-width: 1024px)": {
+          paddingLeft: "32px",
+          paddingRight: "32px",
+        },
+      }}
     >
-      <div className="max-w-4xl mx-auto">
+      <div
+        className="max-w-4xl mx-auto"
+        style={{
+          maxWidth: "896px",
+          margin: "0 auto",
+          width: "100%",
+        }}
+      >
         <AnimatedCard>
-          <GlassCard className="p-6 sm:p-8 lg:p-10">
+          <GlassCard
+            className="p-6 sm:p-8 lg:p-10"
+            style={{
+              padding: "24px",
+              "@media (min-width: 640px)": {
+                padding: "32px",
+              },
+              "@media (min-width: 1024px)": {
+                padding: "40px",
+              },
+            }}
+          >
             {/* Header */}
             <motion.div
               initial={{ y: -50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.6 }}
               className="text-center mb-6 sm:mb-8 lg:mb-10"
+              style={{
+                textAlign: "center",
+                marginBottom: "24px",
+                "@media (min-width: 640px)": {
+                  marginBottom: "32px",
+                },
+                "@media (min-width: 1024px)": {
+                  marginBottom: "40px",
+                },
+              }}
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="w-16 h-16 sm:w-18 sm:h-18 lg:w-20 lg:h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6"
+                style={{
+                  width: "64px",
+                  height: "64px",
+                  margin: "0 auto 16px",
+                  "@media (min-width: 640px)": {
+                    width: "72px",
+                    height: "72px",
+                    marginBottom: "24px",
+                  },
+                  "@media (min-width: 1024px)": {
+                    width: "80px",
+                    height: "80px",
+                    marginBottom: "24px",
+                  },
+                }}
               >
-                <FaFileAlt className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 text-white" />
+                <FaFileAlt
+                  className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 text-white"
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    "@media (min-width: 640px)": {
+                      width: "36px",
+                      height: "36px",
+                    },
+                    "@media (min-width: 1024px)": {
+                      width: "40px",
+                      height: "40px",
+                    },
+                  }}
+                />
               </motion.div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4">
+              <h1
+                className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-4"
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                  marginBottom: "8px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "30px",
+                    marginBottom: "16px",
+                  },
+                  "@media (min-width: 1024px)": {
+                    fontSize: "36px",
+                  },
+                }}
+              >
                 إرسال بلاغ جديد
               </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-gray-600 px-4">
+              <p
+                className="text-base sm:text-lg lg:text-xl text-gray-600 px-4"
+                style={{
+                  fontSize: "16px",
+                  paddingLeft: "16px",
+                  paddingRight: "16px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "18px",
+                  },
+                  "@media (min-width: 1024px)": {
+                    fontSize: "20px",
+                  },
+                }}
+              >
                 أبلغ عن الإشاعات الكاذبة وساهم في بناء مجتمع أكثر وعياً
               </p>
             </motion.div>
@@ -295,6 +394,14 @@ const ReportForm = () => {
               transition={{ delay: 0.3, duration: 0.6 }}
               onSubmit={handleSubmit}
               className="space-y-6 sm:space-y-8"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "24px",
+                "@media (min-width: 640px)": {
+                  gap: "32px",
+                },
+              }}
             >
               {error && (
                 <motion.div
@@ -318,12 +425,52 @@ const ReportForm = () => {
                 <label
                   htmlFor="rumorUrl"
                   className="block text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3"
+                  style={{
+                    display: "block",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    marginBottom: "8px",
+                    "@media (min-width: 640px)": {
+                      fontSize: "18px",
+                      marginBottom: "12px",
+                    },
+                  }}
                 >
                   رابط الإشاعة *
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none">
-                    <FaLink className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
+                <div
+                  className="relative"
+                  style={{
+                    position: "relative",
+                  }}
+                >
+                  <div
+                    className="absolute inset-y-0 right-0 pr-3 sm:pr-4 flex items-center pointer-events-none"
+                    style={{
+                      position: "absolute",
+                      top: "0",
+                      bottom: "0",
+                      right: "0",
+                      paddingRight: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      pointerEvents: "none",
+                      "@media (min-width: 640px)": {
+                        paddingRight: "16px",
+                      },
+                    }}
+                  >
+                    <FaLink
+                      className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400"
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        "@media (min-width: 640px)": {
+                          width: "24px",
+                          height: "24px",
+                        },
+                      }}
+                    />
                   </div>
                   <input
                     type="url"
@@ -334,6 +481,25 @@ const ReportForm = () => {
                     required
                     className="block w-full pr-10 sm:pr-12 pl-3 sm:pl-4 py-3 sm:py-4 border border-gray-300 rounded-lg sm:rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 text-sm sm:text-base lg:text-lg"
                     placeholder="https://example.com/rumor-link"
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      paddingRight: "40px",
+                      paddingLeft: "12px",
+                      paddingTop: "12px",
+                      paddingBottom: "12px",
+                      fontSize: "14px",
+                      "@media (min-width: 640px)": {
+                        paddingRight: "48px",
+                        paddingLeft: "16px",
+                        paddingTop: "16px",
+                        paddingBottom: "16px",
+                        fontSize: "16px",
+                      },
+                      "@media (min-width: 1024px)": {
+                        fontSize: "18px",
+                      },
+                    }}
                   />
                 </div>
               </motion.div>
@@ -347,13 +513,83 @@ const ReportForm = () => {
                 <label
                   htmlFor="image"
                   className="block text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3"
+                  style={{
+                    display: "block",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    marginBottom: "8px",
+                    "@media (min-width: 640px)": {
+                      fontSize: "18px",
+                      marginBottom: "12px",
+                    },
+                  }}
                 >
                   صورة الإشاعة *
                 </label>
-                <div className="mt-2 flex justify-center px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8 border-2 border-gray-300 border-dashed rounded-lg sm:rounded-xl hover:border-gray-400 transition-colors bg-gray-50 hover:bg-gray-100">
-                  <div className="space-y-3 sm:space-y-4 text-center">
-                    <FaImage className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-gray-400" />
-                    <div className="flex flex-col sm:flex-row text-sm sm:text-base lg:text-lg text-gray-600 items-center gap-2 sm:gap-0">
+                <div
+                  className="mt-2 flex justify-center px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8 border-2 border-gray-300 border-dashed rounded-lg sm:rounded-xl hover:border-gray-400 transition-colors bg-gray-50 hover:bg-gray-100"
+                  style={{
+                    marginTop: "8px",
+                    display: "flex",
+                    justifyContent: "center",
+                    paddingLeft: "16px",
+                    paddingRight: "16px",
+                    paddingTop: "24px",
+                    paddingBottom: "24px",
+                    border: "2px dashed #d1d5db",
+                    borderRadius: "8px",
+                    backgroundColor: "#f9fafb",
+                    "@media (min-width: 640px)": {
+                      paddingLeft: "24px",
+                      paddingRight: "24px",
+                      paddingTop: "32px",
+                      paddingBottom: "32px",
+                      borderRadius: "12px",
+                    },
+                  }}
+                >
+                  <div
+                    className="space-y-3 sm:space-y-4 text-center"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                      textAlign: "center",
+                      "@media (min-width: 640px)": {
+                        gap: "16px",
+                      },
+                    }}
+                  >
+                    <FaImage
+                      className="mx-auto h-12 w-12 sm:h-16 sm:w-16 text-gray-400"
+                      style={{
+                        width: "48px",
+                        height: "48px",
+                        margin: "0 auto",
+                        "@media (min-width: 640px)": {
+                          width: "64px",
+                          height: "64px",
+                        },
+                      }}
+                    />
+                    <div
+                      className="flex flex-col sm:flex-row text-sm sm:text-base lg:text-lg text-gray-600 items-center gap-2 sm:gap-0"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        fontSize: "14px",
+                        alignItems: "center",
+                        gap: "8px",
+                        "@media (min-width: 640px)": {
+                          flexDirection: "row",
+                          fontSize: "16px",
+                          gap: "0",
+                        },
+                        "@media (min-width: 1024px)": {
+                          fontSize: "18px",
+                        },
+                      }}
+                    >
                       <label
                         htmlFor="image"
                         className="relative cursor-pointer bg-white rounded-lg sm:rounded-xl font-semibold text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 px-4 sm:px-6 py-2 sm:py-3 border border-blue-300 hover:border-blue-400 transition-all duration-300"
@@ -422,6 +658,9 @@ const ReportForm = () => {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.7 }}
                 className="text-center"
+                style={{
+                  textAlign: "center",
+                }}
               >
                 <motion.button
                   type="submit"
@@ -429,6 +668,23 @@ const ReportForm = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="group relative inline-flex items-center gap-3 py-4 px-12 border border-transparent text-xl font-bold rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    paddingTop: "16px",
+                    paddingBottom: "16px",
+                    paddingLeft: "48px",
+                    paddingRight: "48px",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                    borderRadius: "12px",
+                    "@media (max-width: 640px)": {
+                      paddingLeft: "24px",
+                      paddingRight: "24px",
+                      fontSize: "18px",
+                    },
+                  }}
                 >
                   {loading ? (
                     <motion.div

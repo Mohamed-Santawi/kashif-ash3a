@@ -175,11 +175,50 @@ const Notifications = () => {
       <div
         className="space-y-4 sm:space-y-6 lg:space-y-8 p-3 sm:p-4 lg:p-6"
         dir="rtl"
+        style={{
+          maxWidth: "100vw",
+          overflowX: "hidden",
+          padding: "12px",
+          "@media (min-width: 640px)": {
+            padding: "16px",
+          },
+          "@media (min-width: 1024px)": {
+            padding: "24px",
+          },
+        }}
       >
         {/* Header */}
         <AnimatedSection>
-          <GlassCard className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <GlassCard
+            className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/20"
+            style={{
+              padding: "12px",
+              borderRadius: "12px",
+              "@media (min-width: 640px)": {
+                padding: "16px",
+                borderRadius: "16px",
+              },
+              "@media (min-width: 1024px)": {
+                padding: "24px",
+                borderRadius: "24px",
+              },
+            }}
+          >
+            <div
+              className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                justifyContent: "space-between",
+                gap: "12px",
+                "@media (min-width: 640px)": {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "16px",
+                },
+              }}
+            >
               <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
                 <motion.div
                   initial={{ scale: 0 }}
@@ -210,7 +249,19 @@ const Notifications = () => {
                   </motion.p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-1 sm:gap-2 w-full sm:w-auto">
+              <div
+                className="flex flex-wrap gap-1 sm:gap-2 w-full sm:w-auto"
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "4px",
+                  width: "100%",
+                  "@media (min-width: 640px)": {
+                    gap: "8px",
+                    width: "auto",
+                  },
+                }}
+              >
                 {unreadCount > 0 && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -275,7 +326,17 @@ const Notifications = () => {
               </p>
             </GlassCard>
           ) : (
-            <div className="space-y-3 sm:space-y-4">
+            <div
+              className="space-y-3 sm:space-y-4"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px",
+                "@media (min-width: 640px)": {
+                  gap: "16px",
+                },
+              }}
+            >
               {filteredNotifications.map((notification, index) => {
                 const IconComponent = getNotificationIcon(notification.type);
                 const colorClass = getNotificationColor(notification.type);
@@ -294,18 +355,87 @@ const Notifications = () => {
                           ? "bg-blue-50/60 border-blue-200 ring-1 ring-blue-200"
                           : "bg-white/50 border-white/20"
                       }`}
+                      style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        "@media (min-width: 640px)": {
+                          padding: "16px",
+                          borderRadius: "12px",
+                        },
+                        "@media (min-width: 1024px)": {
+                          padding: "24px",
+                          borderRadius: "16px",
+                        },
+                      }}
                     >
                       {!notification.read && (
                         <div className="absolute left-0 top-0 h-full w-1 bg-blue-400 rounded-l-lg sm:rounded-l-xl lg:rounded-l-2xl" />
                       )}
-                      <div className="flex items-start gap-2 sm:gap-3 lg:gap-4">
+                      <div
+                        className="flex items-start gap-2 sm:gap-3 lg:gap-4"
+                        style={{
+                          display: "flex",
+                          alignItems: "flex-start",
+                          gap: "8px",
+                          "@media (min-width: 640px)": {
+                            gap: "12px",
+                          },
+                          "@media (min-width: 1024px)": {
+                            gap: "16px",
+                          },
+                        }}
+                      >
                         <div
                           className={`p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${colorClass} text-white flex-shrink-0`}
+                          style={{
+                            padding: "8px",
+                            borderRadius: "8px",
+                            "@media (min-width: 640px)": {
+                              padding: "12px",
+                              borderRadius: "12px",
+                            },
+                          }}
                         >
-                          <IconComponent className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                          <IconComponent
+                            className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5"
+                            style={{
+                              width: "12px",
+                              height: "12px",
+                              "@media (min-width: 640px)": {
+                                width: "16px",
+                                height: "16px",
+                              },
+                              "@media (min-width: 1024px)": {
+                                width: "20px",
+                                height: "20px",
+                              },
+                            }}
+                          />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 lg:gap-4">
+                        <div
+                          className="flex-1 min-w-0"
+                          style={{
+                            flex: "1",
+                            minWidth: "0",
+                          }}
+                        >
+                          <div
+                            className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 lg:gap-4"
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
+                              gap: "8px",
+                              "@media (min-width: 640px)": {
+                                flexDirection: "row",
+                                alignItems: "flex-start",
+                                gap: "12px",
+                              },
+                              "@media (min-width: 1024px)": {
+                                gap: "16px",
+                              },
+                            }}
+                          >
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
                                 <div className="flex items-center gap-1 sm:gap-2 min-w-0">
@@ -343,7 +473,22 @@ const Notifications = () => {
                                   </div>
                                 )}
                               </div>
-                              <p className="text-xs sm:text-sm lg:text-base text-gray-600 mb-2 sm:mb-3 leading-relaxed break-words">
+                              <p
+                                className="text-xs sm:text-sm lg:text-base text-gray-600 mb-2 sm:mb-3 leading-relaxed break-words"
+                                style={{
+                                  fontSize: "12px",
+                                  lineHeight: "1.5",
+                                  wordBreak: "break-word",
+                                  marginBottom: "8px",
+                                  "@media (min-width: 640px)": {
+                                    fontSize: "14px",
+                                    marginBottom: "12px",
+                                  },
+                                  "@media (min-width: 1024px)": {
+                                    fontSize: "16px",
+                                  },
+                                }}
+                              >
                                 {notification.message}
                               </p>
                               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 lg:gap-4 text-xs sm:text-sm text-gray-500">
@@ -425,11 +570,45 @@ const Notifications = () => {
         </AnimatedSection>
 
         {modalReport && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50"
+            style={{
+              position: "fixed",
+              top: "0",
+              left: "0",
+              right: "0",
+              bottom: "0",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "8px",
+              zIndex: "50",
+              "@media (min-width: 640px)": {
+                padding: "16px",
+              },
+            }}
+          >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 w-full max-w-7xl max-h-[95vh] overflow-y-auto"
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                padding: "16px",
+                width: "100%",
+                maxWidth: "1280px",
+                maxHeight: "95vh",
+                overflowY: "auto",
+                "@media (min-width: 640px)": {
+                  borderRadius: "16px",
+                  padding: "24px",
+                },
+                "@media (min-width: 1024px)": {
+                  padding: "32px",
+                },
+              }}
             >
               <div className="flex justify-between items-center mb-4 sm:mb-6">
                 <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
@@ -443,11 +622,45 @@ const Notifications = () => {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+              <div
+                className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr",
+                  gap: "16px",
+                  "@media (min-width: 640px)": {
+                    gap: "24px",
+                  },
+                  "@media (min-width: 1024px)": {
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "32px",
+                  },
+                }}
+              >
                 {/* Left Column - Text Content */}
-                <div className="space-y-4 sm:space-y-6">
+                <div
+                  className="space-y-4 sm:space-y-6"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    "@media (min-width: 640px)": {
+                      gap: "24px",
+                    },
+                  }}
+                >
                   <div>
-                    <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2">
+                    <p
+                      className="text-base sm:text-lg font-semibold text-gray-700 mb-2"
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        marginBottom: "8px",
+                        "@media (min-width: 640px)": {
+                          fontSize: "18px",
+                        },
+                      }}
+                    >
                       رابط الإشاعة:
                     </p>
                     {modalReport.rumorUrl ? (
@@ -456,11 +669,32 @@ const Notifications = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-800 break-all text-sm sm:text-base lg:text-lg underline"
+                        style={{
+                          fontSize: "14px",
+                          wordBreak: "break-all",
+                          "@media (min-width: 640px)": {
+                            fontSize: "16px",
+                          },
+                          "@media (min-width: 1024px)": {
+                            fontSize: "18px",
+                          },
+                        }}
                       >
                         {modalReport.rumorUrl}
                       </a>
                     ) : (
-                      <span className="text-gray-500 text-sm sm:text-base lg:text-lg">
+                      <span
+                        className="text-gray-500 text-sm sm:text-base lg:text-lg"
+                        style={{
+                          fontSize: "14px",
+                          "@media (min-width: 640px)": {
+                            fontSize: "16px",
+                          },
+                          "@media (min-width: 1024px)": {
+                            fontSize: "18px",
+                          },
+                        }}
+                      >
                         لا يوجد
                       </span>
                     )}
@@ -506,18 +740,52 @@ const Notifications = () => {
                 </div>
 
                 {/* Right Column - Image */}
-                <div className="space-y-4 sm:space-y-6">
+                <div
+                  className="space-y-4 sm:space-y-6"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    "@media (min-width: 640px)": {
+                      gap: "24px",
+                    },
+                  }}
+                >
                   {modalReport.imageUrl && (
                     <div>
-                      <p className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3">
+                      <p
+                        className="text-base sm:text-lg font-semibold text-gray-700 mb-2 sm:mb-3"
+                        style={{
+                          fontSize: "16px",
+                          fontWeight: "600",
+                          marginBottom: "8px",
+                          "@media (min-width: 640px)": {
+                            fontSize: "18px",
+                            marginBottom: "12px",
+                          },
+                        }}
+                      >
                         الصورة:
                       </p>
-                      <div className="flex justify-center">
+                      <div
+                        className="flex justify-center"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
+                      >
                         <img
                           src={modalReport.imageUrl}
                           alt="صورة البلاغ"
                           className="max-w-full h-auto rounded-lg shadow-lg"
-                          style={{ maxHeight: "400px" }}
+                          style={{
+                            maxHeight: "400px",
+                            maxWidth: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                            boxShadow:
+                              "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                          }}
                         />
                       </div>
                     </div>

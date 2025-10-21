@@ -272,29 +272,102 @@ const AdminManagement = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div
+        className="max-w-7xl mx-auto"
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          width: "100%",
+          padding: "16px",
+          "@media (min-width: 640px)": {
+            padding: "24px",
+          },
+          "@media (min-width: 1024px)": {
+            padding: "32px",
+          },
+        }}
+      >
         {/* Header */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-10 gap-4 sm:gap-0"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            marginBottom: "24px",
+            gap: "16px",
+            "@media (min-width: 640px)": {
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "40px",
+              gap: "0",
+            },
+          }}
         >
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+            <h1
+              className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2"
+              style={{
+                fontSize: "24px",
+                fontWeight: "bold",
+                marginBottom: "8px",
+                "@media (min-width: 640px)": {
+                  fontSize: "30px",
+                },
+                "@media (min-width: 1024px)": {
+                  fontSize: "36px",
+                },
+              }}
+            >
               إدارة المديرين
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600">
+            <p
+              className="text-base sm:text-lg lg:text-xl text-gray-600"
+              style={{
+                fontSize: "16px",
+                "@media (min-width: 640px)": {
+                  fontSize: "18px",
+                },
+                "@media (min-width: 1024px)": {
+                  fontSize: "20px",
+                },
+              }}
+            >
               إدارة صلاحيات المديرين والأدوار
             </p>
             {currentUser && (
-              <p className="text-xs sm:text-sm text-blue-600 mt-2">
+              <p
+                className="text-xs sm:text-sm text-blue-600 mt-2"
+                style={{
+                  fontSize: "12px",
+                  marginTop: "8px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "14px",
+                  },
+                }}
+              >
                 مسجل الدخول كـ:{" "}
                 {currentUser.email === "admin@mansa.com" ? "مدير عام" : "مشرف"}
               </p>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          <div
+            className="flex flex-col sm:flex-row gap-2 sm:gap-4"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              "@media (min-width: 640px)": {
+                flexDirection: "row",
+                gap: "16px",
+              },
+            }}
+          >
             <motion.button
               onClick={() => navigate("/admin/dashboard")}
               whileHover={{ scale: 1.05 }}
@@ -360,7 +433,16 @@ const AdminManagement = () => {
         )}
 
         {/* Admins List */}
-        <div className="grid gap-4 sm:gap-6">
+        <div
+          className="grid gap-4 sm:gap-6"
+          style={{
+            display: "grid",
+            gap: "16px",
+            "@media (min-width: 640px)": {
+              gap: "24px",
+            },
+          }}
+        >
           {admins.length === 0 ? (
             <AnimatedCard>
               <GlassCard className="p-6 sm:p-10 text-center">
@@ -376,29 +458,122 @@ const AdminManagement = () => {
           ) : (
             admins.map((admin) => (
               <AnimatedCard key={admin.id}>
-                <GlassCard className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-4 sm:gap-0">
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
-                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+                <GlassCard
+                  className="p-4 sm:p-6"
+                  style={{
+                    padding: "16px",
+                    "@media (min-width: 640px)": {
+                      padding: "24px",
+                    },
+                  }}
+                >
+                  <div
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-4 sm:gap-0"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      marginBottom: "16px",
+                      gap: "16px",
+                      "@media (min-width: 640px)": {
+                        flexDirection: "row",
+                        alignItems: "flex-start",
+                        justifyContent: "space-between",
+                        gap: "0",
+                      },
+                    }}
+                  >
+                    <div
+                      className="flex-1"
+                      style={{
+                        flex: "1",
+                      }}
+                    >
+                      <div
+                        className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          gap: "8px",
+                          marginBottom: "8px",
+                          "@media (min-width: 640px)": {
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: "16px",
+                          },
+                        }}
+                      >
+                        <h3
+                          className="text-lg sm:text-xl font-semibold text-gray-900"
+                          style={{
+                            fontSize: "18px",
+                            fontWeight: "600",
+                            "@media (min-width: 640px)": {
+                              fontSize: "20px",
+                            },
+                          }}
+                        >
                           {admin.name || admin.email}
                         </h3>
-                        <div className="flex flex-wrap gap-2">
+                        <div
+                          className="flex flex-wrap gap-2"
+                          style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "8px",
+                          }}
+                        >
                           <span
                             className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                               admin.isActive
                                 ? "bg-green-100 text-green-800"
                                 : "bg-red-100 text-red-800"
                             }`}
+                            style={{
+                              paddingLeft: "8px",
+                              paddingRight: "8px",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              fontSize: "12px",
+                              "@media (min-width: 640px)": {
+                                paddingLeft: "12px",
+                                paddingRight: "12px",
+                                fontSize: "14px",
+                              },
+                            }}
                           >
                             {admin.isActive ? "نشط" : "غير نشط"}
                           </span>
-                          <span className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-100 text-blue-800">
+                          <span
+                            className="px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-blue-100 text-blue-800"
+                            style={{
+                              paddingLeft: "8px",
+                              paddingRight: "8px",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              fontSize: "12px",
+                              "@media (min-width: 640px)": {
+                                paddingLeft: "12px",
+                                paddingRight: "12px",
+                                fontSize: "14px",
+                              },
+                            }}
+                          >
                             {getRoleDisplayName(admin.role)}
                           </span>
                         </div>
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+                      <div
+                        className="text-xs sm:text-sm text-gray-600 space-y-1"
+                        style={{
+                          fontSize: "12px",
+                          "@media (min-width: 640px)": {
+                            fontSize: "14px",
+                          },
+                        }}
+                      >
                         <p>البريد الإلكتروني: {admin.email}</p>
                         <p>
                           تاريخ الإنشاء:{" "}
@@ -416,7 +591,17 @@ const AdminManagement = () => {
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
+                    <div
+                      className="flex flex-col sm:flex-row gap-2"
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
+                        "@media (min-width: 640px)": {
+                          flexDirection: "row",
+                        },
+                      }}
+                    >
                       <motion.button
                         onClick={() => toggleAdminStatus(admin)}
                         whileHover={{ scale: 1.05 }}

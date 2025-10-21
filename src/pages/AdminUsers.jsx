@@ -292,33 +292,117 @@ const AdminUsers = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-7xl mx-auto">
+      <div
+        className="max-w-7xl mx-auto"
+        style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          width: "100%",
+          padding: "16px",
+          "@media (min-width: 640px)": {
+            padding: "24px",
+          },
+          "@media (min-width: 1024px)": {
+            padding: "32px",
+          },
+        }}
+      >
         {/* Header */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
           className="mb-6 sm:mb-8"
+          style={{
+            marginBottom: "24px",
+            "@media (min-width: 640px)": {
+              marginBottom: "32px",
+            },
+          }}
         >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+          <div
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+              gap: "16px",
+              "@media (min-width: 640px)": {
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "0",
+              },
+            }}
+          >
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              <h1
+                className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2"
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                  marginBottom: "8px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "30px",
+                  },
+                }}
+              >
                 إدارة المستخدمين
               </h1>
-              <p className="text-base sm:text-lg text-gray-600">
+              <p
+                className="text-base sm:text-lg text-gray-600"
+                style={{
+                  fontSize: "16px",
+                  "@media (min-width: 640px)": {
+                    fontSize: "18px",
+                  },
+                }}
+              >
                 عرض وإدارة جميع المستخدمين مع ترتيبهم حسب النقاط
               </p>
             </div>
 
             {/* Sort Options */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-              <label className="text-sm font-medium text-gray-700">
+            <div
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: "8px",
+                "@media (min-width: 640px)": {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "16px",
+                },
+              }}
+            >
+              <label
+                className="text-sm font-medium text-gray-700"
+                style={{
+                  fontSize: "14px",
+                  fontWeight: "500",
+                }}
+              >
                 ترتيب حسب:
               </label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                style={{
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                  paddingTop: "8px",
+                  paddingBottom: "8px",
+                  fontSize: "14px",
+                  "@media (min-width: 640px)": {
+                    paddingLeft: "16px",
+                    paddingRight: "16px",
+                    fontSize: "16px",
+                  },
+                }}
               >
                 <option value="points">النقاط</option>
                 <option value="reports">عدد البلاغات</option>
@@ -330,7 +414,20 @@ const AdminUsers = () => {
         </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr",
+            gap: "16px",
+            marginBottom: "24px",
+            "@media (min-width: 640px)": {
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "24px",
+              marginBottom: "32px",
+            },
+          }}
+        >
           <AnimatedCard>
             <GlassCard className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
@@ -372,7 +469,17 @@ const AdminUsers = () => {
         </div>
 
         {/* Users List */}
-        <div className="space-y-3 sm:space-y-4">
+        <div
+          className="space-y-3 sm:space-y-4"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+            "@media (min-width: 640px)": {
+              gap: "16px",
+            },
+          }}
+        >
           {users.length === 0 ? (
             <AnimatedCard>
               <GlassCard className="p-6 sm:p-8 lg:p-10 text-center">
@@ -390,35 +497,196 @@ const AdminUsers = () => {
               <AnimatedCard key={user.id}>
                 <GlassCard
                   className={`p-4 sm:p-6 border-2 ${getRankColor(index)}`}
+                  style={{
+                    padding: "16px",
+                    "@media (min-width: 640px)": {
+                      padding: "24px",
+                    },
+                  }}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
-                    <div className="flex items-center gap-3 sm:gap-4">
+                  <div
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      justifyContent: "space-between",
+                      gap: "16px",
+                      "@media (min-width: 640px)": {
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "0",
+                      },
+                    }}
+                  >
+                    <div
+                      className="flex items-center gap-3 sm:gap-4"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        "@media (min-width: 640px)": {
+                          gap: "16px",
+                        },
+                      }}
+                    >
                       {/* Rank */}
-                      <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex-shrink-0">
+                      <div
+                        className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 flex-shrink-0"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: "0",
+                          "@media (min-width: 640px)": {
+                            width: "48px",
+                            height: "48px",
+                          },
+                        }}
+                      >
                         {getRankIcon(index)}
                       </div>
 
                       {/* User Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 truncate">
+                      <div
+                        className="flex-1 min-w-0"
+                        style={{
+                          flex: "1",
+                          minWidth: "0",
+                        }}
+                      >
+                        <h3
+                          className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 truncate"
+                          style={{
+                            fontSize: "18px",
+                            fontWeight: "600",
+                            marginBottom: "4px",
+                            "@media (min-width: 640px)": {
+                              fontSize: "20px",
+                            },
+                          }}
+                        >
                           {user.name || "مستخدم غير محدد"}
                         </h3>
-                        <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">
+                        <p
+                          className="text-xs sm:text-sm text-gray-600 mb-2 truncate"
+                          style={{
+                            fontSize: "12px",
+                            marginBottom: "8px",
+                            "@media (min-width: 640px)": {
+                              fontSize: "14px",
+                            },
+                          }}
+                        >
                           {user.email || user.id}
                         </p>
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                          <div className="flex items-center gap-2 bg-yellow-100 px-2 sm:px-3 py-1 sm:py-2 rounded-lg">
-                            <FaStar className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
-                            <span className="text-sm sm:text-lg font-bold text-yellow-700">
+                        <div
+                          className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4"
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "8px",
+                            "@media (min-width: 640px)": {
+                              flexDirection: "row",
+                              alignItems: "center",
+                              gap: "16px",
+                            },
+                          }}
+                        >
+                          <div
+                            className="flex items-center gap-2 bg-yellow-100 px-2 sm:px-3 py-1 sm:py-2 rounded-lg"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              paddingLeft: "8px",
+                              paddingRight: "8px",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              "@media (min-width: 640px)": {
+                                paddingLeft: "12px",
+                                paddingRight: "12px",
+                                paddingTop: "8px",
+                                paddingBottom: "8px",
+                              },
+                            }}
+                          >
+                            <FaStar
+                              className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600"
+                              style={{
+                                width: "16px",
+                                height: "16px",
+                                "@media (min-width: 640px)": {
+                                  width: "20px",
+                                  height: "20px",
+                                },
+                              }}
+                            />
+                            <span
+                              className="text-sm sm:text-lg font-bold text-yellow-700"
+                              style={{
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                                "@media (min-width: 640px)": {
+                                  fontSize: "18px",
+                                },
+                              }}
+                            >
                               {user.totalPoints || 0} نقطة
                             </span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
-                            <FaFileAlt className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
+                          <div
+                            className="flex items-center gap-1 text-xs sm:text-sm text-gray-500"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontSize: "12px",
+                              "@media (min-width: 640px)": {
+                                fontSize: "14px",
+                              },
+                            }}
+                          >
+                            <FaFileAlt
+                              className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500"
+                              style={{
+                                width: "12px",
+                                height: "12px",
+                                "@media (min-width: 640px)": {
+                                  width: "16px",
+                                  height: "16px",
+                                },
+                              }}
+                            />
                             <span>{user.totalReports || 0} بلاغ</span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
-                            <FaCalendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                          <div
+                            className="flex items-center gap-1 text-xs sm:text-sm text-gray-500"
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontSize: "12px",
+                              "@media (min-width: 640px)": {
+                                fontSize: "14px",
+                              },
+                            }}
+                          >
+                            <FaCalendar
+                              className="w-3 h-3 sm:w-4 sm:h-4 text-green-500"
+                              style={{
+                                width: "12px",
+                                height: "12px",
+                                "@media (min-width: 640px)": {
+                                  width: "16px",
+                                  height: "16px",
+                                },
+                              }}
+                            />
                             <span className="truncate">
                               {user.createdAt
                                 ?.toDate?.()
@@ -433,11 +701,38 @@ const AdminUsers = () => {
                     </div>
 
                     {/* User Stats */}
-                    <div className="text-center sm:text-right flex-shrink-0">
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+                    <div
+                      className="text-center sm:text-right flex-shrink-0"
+                      style={{
+                        textAlign: "center",
+                        flexShrink: "0",
+                        "@media (min-width: 640px)": {
+                          textAlign: "right",
+                        },
+                      }}
+                    >
+                      <div
+                        className="text-xl sm:text-2xl font-bold text-gray-900 mb-1"
+                        style={{
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                          marginBottom: "4px",
+                          "@media (min-width: 640px)": {
+                            fontSize: "24px",
+                          },
+                        }}
+                      >
                         #{index + 1}
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-600">
+                      <div
+                        className="text-xs sm:text-sm text-gray-600"
+                        style={{
+                          fontSize: "12px",
+                          "@media (min-width: 640px)": {
+                            fontSize: "14px",
+                          },
+                        }}
+                      >
                         الترتيب العام
                       </div>
                     </div>

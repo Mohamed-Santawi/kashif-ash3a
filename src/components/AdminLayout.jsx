@@ -55,7 +55,15 @@ const AdminLayout = ({ children, currentAdmin }) => {
   };
 
   return (
-    <div className="h-screen bg-gray-50 flex" dir="rtl">
+    <div
+      className="h-screen bg-gray-50 flex overflow-hidden"
+      dir="rtl"
+      style={{
+        minHeight: "100vh",
+        maxWidth: "100vw",
+        overflowX: "hidden",
+      }}
+    >
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
@@ -69,7 +77,7 @@ const AdminLayout = ({ children, currentAdmin }) => {
         initial={{ x: 300, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className={`w-64 bg-white shadow-2xl lg:shadow-none lg:static lg:z-auto ${
+        className={`w-72 sm:w-80 lg:w-64 bg-white shadow-2xl lg:shadow-none lg:static lg:z-auto ${
           sidebarOpen
             ? "fixed inset-y-0 right-0 z-50 lg:relative lg:z-auto"
             : "hidden lg:block"
@@ -146,9 +154,15 @@ const AdminLayout = ({ children, currentAdmin }) => {
       </motion.aside>
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div
+        className="flex-1 flex flex-col overflow-hidden min-w-0"
+        style={{
+          maxWidth: "calc(100vw - 0px)",
+          overflowX: "hidden",
+        }}
+      >
         {/* Mobile header */}
-        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 p-4 flex items-center justify-between">
+        <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 p-4 flex items-center justify-between relative z-30">
           <div className="flex items-center space-x-3 space-x-reverse">
             <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-lg">م</span>
@@ -159,7 +173,7 @@ const AdminLayout = ({ children, currentAdmin }) => {
           </div>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-gray-700 hover:text-gray-900 cursor-pointer"
+            className="p-2 text-gray-700 hover:text-gray-900 cursor-pointer z-40 relative"
           >
             {sidebarOpen ? (
               <FaTimes className="w-6 h-6" />
@@ -206,8 +220,22 @@ const AdminLayout = ({ children, currentAdmin }) => {
         </div>
 
         {/* Page content */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
-          {children}
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6 lg:ml-0"
+          style={{
+            maxWidth: "100%",
+            overflowX: "hidden",
+          }}
+        >
+          <div
+            className="max-w-full lg:max-w-none w-full"
+            style={{
+              maxWidth: "100%",
+              overflowX: "hidden",
+            }}
+          >
+            {children}
+          </div>
         </div>
       </div>
     </div>
